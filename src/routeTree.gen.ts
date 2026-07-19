@@ -9,38 +9,173 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedTracksTrackSlugRouteImport } from './routes/_authenticated/tracks.$trackSlug'
+import { Route as AuthenticatedMissionsMissionIdRouteImport } from './routes/_authenticated/missions.$missionId'
+import { Route as AuthenticatedFieldsFieldSlugRouteImport } from './routes/_authenticated/fields.$fieldSlug'
+import { Route as AuthenticatedEpisodesEpisodeIdRouteImport } from './routes/_authenticated/episodes.$episodeId'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTracksTrackSlugRoute =
+  AuthenticatedTracksTrackSlugRouteImport.update({
+    id: '/tracks/$trackSlug',
+    path: '/tracks/$trackSlug',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMissionsMissionIdRoute =
+  AuthenticatedMissionsMissionIdRouteImport.update({
+    id: '/missions/$missionId',
+    path: '/missions/$missionId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedFieldsFieldSlugRoute =
+  AuthenticatedFieldsFieldSlugRouteImport.update({
+    id: '/fields/$fieldSlug',
+    path: '/fields/$fieldSlug',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEpisodesEpisodeIdRoute =
+  AuthenticatedEpisodesEpisodeIdRouteImport.update({
+    id: '/episodes/$episodeId',
+    path: '/episodes/$episodeId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/profile': typeof AuthenticatedProfileRoute
+  '/episodes/$episodeId': typeof AuthenticatedEpisodesEpisodeIdRoute
+  '/fields/$fieldSlug': typeof AuthenticatedFieldsFieldSlugRoute
+  '/missions/$missionId': typeof AuthenticatedMissionsMissionIdRoute
+  '/tracks/$trackSlug': typeof AuthenticatedTracksTrackSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/profile': typeof AuthenticatedProfileRoute
+  '/episodes/$episodeId': typeof AuthenticatedEpisodesEpisodeIdRoute
+  '/fields/$fieldSlug': typeof AuthenticatedFieldsFieldSlugRoute
+  '/missions/$missionId': typeof AuthenticatedMissionsMissionIdRoute
+  '/tracks/$trackSlug': typeof AuthenticatedTracksTrackSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/episodes/$episodeId': typeof AuthenticatedEpisodesEpisodeIdRoute
+  '/_authenticated/fields/$fieldSlug': typeof AuthenticatedFieldsFieldSlugRoute
+  '/_authenticated/missions/$missionId': typeof AuthenticatedMissionsMissionIdRoute
+  '/_authenticated/tracks/$trackSlug': typeof AuthenticatedTracksTrackSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/sitemap.xml'
+    | '/dashboard'
+    | '/profile'
+    | '/episodes/$episodeId'
+    | '/fields/$fieldSlug'
+    | '/missions/$missionId'
+    | '/tracks/$trackSlug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/sitemap.xml'
+    | '/dashboard'
+    | '/profile'
+    | '/episodes/$episodeId'
+    | '/fields/$fieldSlug'
+    | '/missions/$missionId'
+    | '/tracks/$trackSlug'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/sitemap.xml'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/profile'
+    | '/_authenticated/episodes/$episodeId'
+    | '/_authenticated/fields/$fieldSlug'
+    | '/_authenticated/missions/$missionId'
+    | '/_authenticated/tracks/$trackSlug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +183,78 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tracks/$trackSlug': {
+      id: '/_authenticated/tracks/$trackSlug'
+      path: '/tracks/$trackSlug'
+      fullPath: '/tracks/$trackSlug'
+      preLoaderRoute: typeof AuthenticatedTracksTrackSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/missions/$missionId': {
+      id: '/_authenticated/missions/$missionId'
+      path: '/missions/$missionId'
+      fullPath: '/missions/$missionId'
+      preLoaderRoute: typeof AuthenticatedMissionsMissionIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/fields/$fieldSlug': {
+      id: '/_authenticated/fields/$fieldSlug'
+      path: '/fields/$fieldSlug'
+      fullPath: '/fields/$fieldSlug'
+      preLoaderRoute: typeof AuthenticatedFieldsFieldSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/episodes/$episodeId': {
+      id: '/_authenticated/episodes/$episodeId'
+      path: '/episodes/$episodeId'
+      fullPath: '/episodes/$episodeId'
+      preLoaderRoute: typeof AuthenticatedEpisodesEpisodeIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedEpisodesEpisodeIdRoute: typeof AuthenticatedEpisodesEpisodeIdRoute
+  AuthenticatedFieldsFieldSlugRoute: typeof AuthenticatedFieldsFieldSlugRoute
+  AuthenticatedMissionsMissionIdRoute: typeof AuthenticatedMissionsMissionIdRoute
+  AuthenticatedTracksTrackSlugRoute: typeof AuthenticatedTracksTrackSlugRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedEpisodesEpisodeIdRoute: AuthenticatedEpisodesEpisodeIdRoute,
+  AuthenticatedFieldsFieldSlugRoute: AuthenticatedFieldsFieldSlugRoute,
+  AuthenticatedMissionsMissionIdRoute: AuthenticatedMissionsMissionIdRoute,
+  AuthenticatedTracksTrackSlugRoute: AuthenticatedTracksTrackSlugRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
