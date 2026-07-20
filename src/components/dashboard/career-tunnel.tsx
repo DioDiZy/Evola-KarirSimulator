@@ -7,6 +7,7 @@ import * as THREE from "three";
 import { ArrowRight } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CareerScreen, type CareerTunnelField } from "./career-screen";
+export type { CareerTunnelField };
 import { TunnelEnvironment } from "./tunnel-environment";
 
 const ACCENTS = ["#7dd3fc", "#bef2de", "#a78bfa", "#38bdf8", "#f472b6", "#fbbf24"];
