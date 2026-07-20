@@ -1,16 +1,25 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { listFields, getMyProgress } from "@/lib/careerlab.functions";
-import { ArrowRight } from "lucide-react";
+import { CareerTunnel, type CareerTunnelField } from "@/components/dashboard/career-tunnel";
 
 const fieldsQO = queryOptions({ queryKey: ["fields"], queryFn: () => listFields() });
 const progressQO = queryOptions({ queryKey: ["progress"], queryFn: () => getMyProgress() });
 
+const FIELD_MEDIA: Record<string, string> = {
+  "ui-ux-designer": "/images/career/ui-ux-designer.webp",
+  "frontend-developer": "/images/career/frontend-developer.webp",
+  "backend-developer": "/images/career/backend-developer.webp",
+  "ai-engineer": "/images/career/ai-engineer.webp",
+};
+
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard · CareerLab" }, { name: "robots", content: "noindex" }] }),
-  loader: ({ context }) => {
-    context.queryClient.ensureQueryData(fieldsQO);
-    context.queryClient.ensureQueryData(progressQO);
+  loader: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(fieldsQO),
+      context.queryClient.ensureQueryData(progressQO),
+    ]);
   },
   component: Dashboard,
 });
@@ -20,6 +29,15 @@ function Dashboard() {
   const { data: progress } = useSuspenseQuery(progressQO);
   const totalCredits = progress.trackProgress.reduce((s, p) => s + p.career_credits, 0);
   const totalPP = progress.trackProgress.reduce((s, p) => s + p.performance_points, 0);
+
+  const careerFields: CareerTunnelField[] = fields.map((f) => ({
+    id: f.id,
+    slug: f.slug,
+    name: f.name,
+    tagline: f.tagline ?? "",
+    status: f.status as string,
+    mediaUrl: FIELD_MEDIA[f.slug] ?? null,
+  }));
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-12">
@@ -33,39 +51,13 @@ function Dashboard() {
       </div>
 
       <div className="mt-16">
-        <div className="flex items-end justify-between">
-          <div>
-            <p className="eyebrow">Bidang Karier</p>
-            <h2 className="mt-3 font-display text-3xl">Pilih bidang untuk mulai.</h2>
-          </div>
-        </div>
-        <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {fields.map((f) => {
-            const s = f.status as string;
-            const disabled = s !== "active";
-            const inner = (
-              <div className={`surface-panel p-6 min-h-[200px] flex flex-col justify-between transition ${disabled ? "opacity-60" : "hover:border-accent"}`}>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className={`h-1.5 w-1.5 rounded-full ${s === "active" ? "bg-accent" : "bg-ink-muted/50"}`} />
-                    <span className="eyebrow">{s === "active" ? "Aktif" : s === "preview" ? "Preview" : "Segera Hadir"}</span>
-                  </div>
-                  <h3 className="mt-4 font-display text-2xl">{f.name}</h3>
-                  <p className="mt-2 text-sm text-ink-dim">{f.tagline}</p>
-                </div>
-                {!disabled && (
-                  <span className="text-accent text-sm inline-flex items-center gap-1 mt-4">
-                    Buka <ArrowRight className="h-3.5 w-3.5" />
-                  </span>
-                )}
-              </div>
-            );
-            return disabled ? (
-              <div key={f.id}>{inner}</div>
-            ) : (
-              <Link key={f.id} to="/fields/$fieldSlug" params={{ fieldSlug: f.slug }}>{inner}</Link>
-            );
-          })}
+        <p className="eyebrow">Bidang Karier</p>
+        <h2 className="mt-3 font-display text-3xl">Masuki lorong dan temukan bidangmu.</h2>
+        <p className="mt-2 text-sm text-ink-dim max-w-2xl">
+          Scroll untuk menyusuri koridor, lalu klik layar bidang untuk membuka detailnya.
+        </p>
+        <div className="mt-8">
+          <CareerTunnel fields={careerFields} />
         </div>
       </div>
     </div>
