@@ -264,7 +264,7 @@ function Chamber({
           track={track}
           position={position}
           color={TRACK_COLORS[i % TRACK_COLORS.length]}
-          onSelect={(t) => setSelected(t as any)}
+          onSelect={(t) => setSelected(t)}
           selected={selected?.id === track.id}
           fading={!!selected}
         />
