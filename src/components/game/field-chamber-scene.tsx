@@ -3,7 +3,6 @@ import {
   Float,
   MeshReflectorMaterial,
   Text,
-  Environment,
   ContactShadows,
   Html,
 } from "@react-three/drei";
