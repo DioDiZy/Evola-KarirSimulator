@@ -19,6 +19,8 @@ export type ChamberTrack = {
   name: string;
   tagline: string | null;
   status: string;
+  __x?: number;
+  __z?: number;
 };
 
 const ACCENT = "#f4a15a";
