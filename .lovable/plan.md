@@ -1,82 +1,106 @@
+# CareerLab → Career Simulation Game
 
-# CareerLab Mission Engine — MVP Build Plan
+Mengubah alur `Bidang → Track → Episode → Mission` dari halaman tradisional menjadi **single WebGL world** dengan camera-driven transitions. Dashboard tidak berubah (sudah selesai).
 
-Bahasa Indonesia UI. Forged-inspired dark, technical, editorial look. Route flow: landing → auth → dashboard (Fields) → Track → Career Level → Episode → Mission runner → evaluation → credit reward.
+## Prinsip
 
-## 1. Foundation
-- Enable **Lovable Cloud** (auth + Postgres).
-- Design system in `src/styles.css` (dark oklch tokens: deep near-black bg, off-white ink, single accent, mono + serif display pairing). No purple. Token-only colors.
-- Root layout: header with logo + `Masuk`/user menu, main outlet, minimal footer.
-- SEO metadata per route in Bahasa Indonesia.
+1. **Satu Canvas R3F persisten** membungkus seluruh area game. Perpindahan "halaman" = camera flythrough di dalam scene yang sama, bukan route change.
+2. **Route tetap ada** untuk deep-link, SEO, dan back-button — tapi navigasi user default via klik objek 3D yang memicu animasi kamera + `router.navigate` di akhir animasi.
+3. **Fallback penuh** untuk no-WebGL & mobile lemah: layout HTML lama tetap tersedia (Bidang gallery grid, Track list, Mission list).
 
-## 2. Auth (Cloud, email/password + Google)
-- `_authenticated/` layout (managed).
-- `/auth` public page: tab Masuk / Daftar.
-- `profiles` table (id, display_name, avatar_url) + trigger on signup.
-- Header reflects session; sign-out hygiene.
+## Arsitektur
 
-## 3. Data model (schema, migrations, GRANTs, RLS)
+```text
+<GameShell>                       ← baru, wraps _authenticated layout selain /dashboard & /profile
+  <Canvas>                        ← persisten selama user di dalam "game area"
+    <WorldStage />                ← state: "fields" | "field" | "track" | "episode"
+      <FieldsGallery />           ← 4 objek 3D floating (bidang karier)
+      <FieldChamber />            ← ruang dalam bidang, portal ke tracks
+      <TrackMap />                ← node-based 3D map: levels + episodes sebagai checkpoint terhubung
+      <EpisodePod />              ← pod imersif utk detail episode + tombol Mulai (→ mission runner 2D)
+    <CameraDirector />            ← useSpring/lerp target+position berdasarkan stage+focusId
+  </Canvas>
+  <HUD />                         ← overlay HTML: breadcrumb, tombol back, judul, CTA
+  <FallbackLayer />               ← saat !hasWebGL: render layout lama
+</GameShell>
+```
 
-Content lives as seeded rows so the MVP is demo-ready:
+## Camera Choreography
 
-- `fields` — Teknologi Informasi (aktif), Hukum (preview), etc.
-- `career_tracks` — per field (e.g. Frontend Dev, Data Analyst).
-- `career_levels` — Pekerja / Senior (Senior = coming_soon flag).
-- `episodes` — per track+level, ordered.
-- `missions` — belongs to episode; type: `mission` | `micro_task` | `senior_project`; JSON `content` (scenario, choices, tasks).
-- `user_track_progress` — per (user, track): performance_points, career_credits, current_episode_id.
-- `user_mission_attempts` — per (user, mission): score, decisions, completed_at.
-- `user_episode_completions` — grants career_credit once.
+- **Fields view**: kamera jauh, orbit lambat, 4 objek melayang dalam formasi setengah lingkaran.
+- **Klik bidang** → kamera dolly + zoom-in ke objek terpilih (~1.2s ease-in-out cubic), objek lain fade+scale down, ambient shift ke warna bidang → arrived → `router.navigate({ to: '/fields/$slug' })` tanpa remount canvas.
+- **Field chamber**: setelah zoom, muncul portal/altar dengan track cards 3D melayang.
+- **Klik track** → kamera terbang menembus portal → `TrackMap` reveal (node graph 3D).
+- **Klik episode node** → kamera fokus ke node, panel `EpisodePod` slide-in dari HUD → tombol "Mulai Misi" → route ke mission runner 2D (out of canvas, existing UX dipertahankan).
+- **Back**: kamera reverse ke stage sebelumnya, lalu update route.
 
-RLS: users read/write only their own progress rows; content tables readable by `authenticated` (and `anon` for the public catalog preview on landing). GRANTs included per rules.
+## Konten 3D per Stage
 
-## 4. Content seed (Teknologi Informasi track, playable)
-One full Track (Frontend Developer) with 1 Episode ("Sprint Pertama") containing 3 missions:
-1. **Mission — Standup Keputusan** — scenario + 3 choices with weighted scoring.
-2. **Micro-task — Debug UI** — interactive card: pick the broken component in a mocked UI.
-3. **Micro-task — Code Review** — choose the correct diff.
+- **FieldsGallery** — 4 shape berbeda per bidang (UI/UX = kubus prisma, Frontend = wireframe sphere, Backend = tower stack, AI = orb neural). Idle: float + rotate. Hover: scale 1.08, emissive boost, halo ring. Ambient particles per bidang berwarna aksen.
+- **FieldChamber** — ruangan silinder dengan refleksi lantai, 2-3 pedestal (satu per track). Track yang non-active tampil ter-veil + label "Segera Hadir".
+- **TrackMap** — node-based path: setiap Level = cluster, Episode = platform hex terhubung garis neon. Progress ditandai warna (done = amber, current = pulsing, locked = redup). Layout linier melengkung, kamera mengikuti path.
+- **EpisodePod** — floating console: judul, sinopsis, reward, tombol Mulai. Muncul di HUD saat episode dipilih.
 
-Other tracks/fields shown as `Coming Soon` cards (Hukum preview, Senior locked).
+## HUD (HTML overlay)
 
-## 5. Routes
-- `/` — landing (hero with R3F scene, value prop, field grid preview, CTA).
-- `/auth` — sign in / up.
-- `/_authenticated/dashboard` — Fields grid, resume-progress card.
-- `/_authenticated/fields/$fieldSlug` — Tracks list.
-- `/_authenticated/tracks/$trackSlug` — Levels (Pekerja active, Senior locked) + episodes with progress.
-- `/_authenticated/episodes/$episodeId` — Episode overview, mission list, progress bar.
-- `/_authenticated/missions/$missionId` — Mission runner (renders per type). Post-completion → evaluation screen. On last mission of episode → grant career_credit, show reward modal.
-- `/profile` — stats per track, total credits, badges.
+- Breadcrumb kiri-atas: `Bidang › Frontend › Level Junior › Episode 2`, tiap segmen klik = kamera balik.
+- Tombol Back besar (Escape key).
+- Judul stage + subjudul via Framer Motion fade.
+- Stats mini (Performance, Credit) di kanan atas.
 
-Data fetching: `createServerFn` + TanStack Query per canonical pattern.
+## Fallback & Aksesibilitas
 
-## 6. Functional 3D (React Three Fiber)
-- Deps: `three`, `@react-three/fiber`, `@react-three/drei`.
-- **Hero scene** (`/`): floating wireframe "career module" — instanced glass panels orbiting a core, mouse-parallax, subtle bloom. `<ClientOnly>` wrapper, lazy-loaded.
-- **Mission scene**: inside the Frontend track's debug mission — a 3D "workspace" (monitor + code panels floating). User rotates to inspect; clicking a panel is the interactive step (bug identification).
+- Deteksi WebGL & `prefers-reduced-motion` di `GameShell`. Jika gagal → render existing pages (`fields.$fieldSlug.tsx`, `tracks.$trackSlug.tsx`) tanpa Canvas.
+- Semua stage 3D menyediakan tombol HTML tersembunyi (`sr-only` + focusable) yang mirror navigasi — screen reader & keyboard bisa lewati kamera.
+- Mobile: disable postprocessing, reduce particles, kamera dolly lebih pendek.
 
-## 7. Evaluation & rewards
-- Per-mission scoring computed server-side (`createServerFn` with `requireSupabaseAuth`) from submitted decisions vs. the mission's rubric in `content`.
-- Performance Points update (can go up or down).
-- Career Credit granted once per episode completion (never decreases).
-- Evaluation screen: rubric breakdown, feedback strings, next-mission CTA.
+## Perubahan File
 
-## 8. Polish
-- Loading skeletons, empty states, toasts (`sonner`).
-- Progress persistence per track (verified in profile view).
-- Sitemap + robots.
-- Head metadata + OG on landing (generate hero image).
+**Baru**
+- `src/components/game/game-shell.tsx` — provider Canvas persisten + HUD + fallback detector.
+- `src/components/game/world-stage.tsx` — mesin stage & orchestrator.
+- `src/components/game/camera-director.tsx` — animasi kamera.
+- `src/components/game/fields-gallery.tsx` — 4 objek bidang.
+- `src/components/game/field-object.tsx` — komponen 3D per bidang (shape by slug).
+- `src/components/game/field-chamber.tsx` — ruang track picker.
+- `src/components/game/track-map.tsx` — node graph 3D level+episode.
+- `src/components/game/episode-pod.tsx` — HUD detail episode.
+- `src/components/game/hud.tsx` — breadcrumb, back, title.
+- `src/hooks/use-webgl-support.ts` — deteksi kapabilitas.
+- `src/lib/game-store.ts` — Zustand kecil untuk stage + focus id + transition state.
 
-## Technical notes
-- Bahasa Indonesia strings inline (no i18n framework).
-- All server logic via `createServerFn` — no edge functions.
-- Content JSON typed via zod.
-- R3F only inside `<ClientOnly>` + `React.lazy`.
-- Coming Soon fields/level rendered as disabled cards (never dead links).
+**Diubah**
+- `src/routes/_authenticated/route.tsx` — bungkus outlet dengan `<GameShell>` untuk sub-route `fields/*` dan `tracks/*` (dashboard & profile tetap lama).
+- `src/routes/_authenticated/fields.$fieldSlug.tsx` — jadi thin route: sync focus ke game store; fallback content dipertahankan.
+- `src/routes/_authenticated/tracks.$trackSlug.tsx` — sama, sync ke store; expose `TrackMap` via shell.
+- `src/routes/_authenticated/episodes.$episodeId.tsx` — biarkan tetap 2D (mission runner), tapi tombol "Kembali" pakai animasi kamera reverse via store.
+- `src/routes/index.tsx` — tambahkan mode "masuk ke game" (opsional CTA), landing page utama tak berubah drastis.
 
-## Out of scope (v1)
-- Hukum missions (preview only).
-- Senior projects (Coming Soon).
-- Multiplayer, leaderboards, certificates, admin CMS.
+**Tetap**
+- Dashboard (`_authenticated/dashboard.tsx`), Profile, Auth, Landing hero — tidak berubah.
+- `career-tunnel` dashboard tetap dipakai di dashboard.
 
-Ready to build on approval.
+## Teknis
+
+- Persist Canvas: `GameShell` di-mount di layout route, Canvas hanya remount saat masuk/keluar game area (bukan tiap sub-route).
+- Sinkron route ↔ store: `useEffect` di setiap sub-route panggil `gameStore.setFocus({ stage, id })`. `CameraDirector` react ke store, jalankan animasi. Saat animasi kelar dari klik 3D → panggil `router.navigate`.
+- Animasi kamera pakai `@react-spring/three` (sudah tersedia via drei ecosystem) atau lerp manual di `useFrame` — pilih lerp manual untuk hindari dep baru.
+- Data: reuse `listFields`, `getFieldBySlug`, `getTrackBySlug`, `getMyProgress` — semua query sudah ada.
+- Performance budget: <60k tris total; instanced meshes untuk partikel; `MeshReflectorMaterial` hanya desktop.
+
+## Urutan Implementasi
+
+1. `use-webgl-support`, `game-store`, `game-shell` skeleton + fallback.
+2. `world-stage` + `camera-director` (lerp) dengan dummy shapes.
+3. `fields-gallery` + integrasi klik → route.
+4. `field-chamber` + track picker.
+5. `track-map` node graph + `episode-pod`.
+6. `hud` breadcrumb + back gesture (Esc).
+7. Wire ke `_authenticated/route.tsx`, konvert 2 sub-route jadi tipis.
+8. QA: keyboard, mobile viewport, no-WebGL, deep link refresh.
+
+## Batas ruang lingkup
+
+- Dashboard tidak diubah.
+- Mission runner (in-episode) tetap UI 2D — konsisten dengan requirement sebelumnya.
+- Tidak menambah tabel DB baru.
