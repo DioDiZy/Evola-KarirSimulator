@@ -275,7 +275,7 @@ function Chamber({
       <pointLight position={[0, 5, 4]} intensity={1.5} color={ACCENT} />
       <pointLight position={[-6, 3, -4]} intensity={0.9} color={CYAN} />
       <pointLight position={[6, 3, -4]} intensity={0.9} color={VIOLET} />
-      <Environment preset="night" />
+      
     </>
   );
 }
