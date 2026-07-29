@@ -478,18 +478,18 @@ export function CareerTunnel({
           )}
         </Canvas>
 
-        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between p-6">
-          <div>
-            <p className="eyebrow text-white/70">
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4 sm:p-6">
+          <div className="min-w-0">
+            <p className="eyebrow text-ink-muted">
               Bidang
             </p>
 
-            <p className="mt-1 font-display text-xl text-white">
+            <p className="mt-1 font-display text-lg sm:text-xl text-ink truncate">
               {active?.name}
             </p>
           </div>
 
-          <p className="font-mono text-sm text-white/70">
+          <p className="font-mono text-sm text-ink-dim shrink-0">
             {String(
               safeActiveIndex + 1,
             ).padStart(2, "0")}{" "}
@@ -500,12 +500,13 @@ export function CareerTunnel({
           </p>
         </div>
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center p-6">
-          <p className="text-xs uppercase tracking-[0.3em] text-white/60">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center p-4 sm:p-6">
+          <p className="text-xs uppercase tracking-[0.3em] text-ink-muted">
             Scroll to explore
           </p>
         </div>
       </div>
+
 
       <nav
         aria-label="Bidang karier"
