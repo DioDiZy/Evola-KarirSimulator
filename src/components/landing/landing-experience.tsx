@@ -63,32 +63,32 @@ export function LandingExperience() {
           {/* DOM overlay — accessible, keyboard navigable */}
           <div className="pointer-events-none absolute inset-0 flex flex-col">
             <div className="flex-1 flex items-center">
-              <div className="mx-auto w-full max-w-7xl px-6">
+              <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
                 <div className="max-w-2xl pointer-events-auto">
-                  <p className="eyebrow text-white/80">Career Simulation · Bahasa Indonesia</p>
-                  <h1 className="mt-6 font-display text-5xl sm:text-6xl lg:text-7xl leading-[1.02] text-white [text-shadow:_0_4px_40px_rgba(0,0,0,0.6)]">
+                  <p className="eyebrow text-ink-muted">Career Simulation · Bahasa Indonesia</p>
+                  <h1 className="mt-6 font-display leading-[1.05] text-ink" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}>
                     Rasakan dunia kerja
                     <br />
                     <span className="text-accent">sebelum benar-benar</span>
                     <br />
                     memasukinya.
                   </h1>
-                  <p className="mt-6 max-w-xl text-lg text-ink-dim leading-relaxed [text-shadow:_0_2px_20px_rgba(0,0,0,0.6)]">
+                  <p className="mt-6 max-w-xl text-base sm:text-lg text-ink-dim leading-relaxed">
                     Masuki lingkungan kerja virtual. Hadapi situasi profesional. Ambil keputusan.
                     Kerjakan micro-task nyata. Bangun performa dan Career Credit-mu — sebelum
                     wawancara pertama.
                   </p>
-                  <div className="mt-10 flex flex-wrap items-center gap-3">
+                  <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-3">
                     <Link
                       to="/auth"
                       search={{ mode: "signup" }}
-                      className="inline-flex items-center gap-2 rounded-md bg-accent px-6 py-3 text-sm font-medium text-accent-ink hover:brightness-110 transition"
+                      className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:brightness-110 transition min-h-11"
                     >
                       Mulai Mission Pertama <ArrowRight className="h-4 w-4" />
                     </Link>
                     <Link
                       to="/auth"
-                      className="inline-flex items-center gap-2 rounded-md border border-white/25 bg-black/30 backdrop-blur px-6 py-3 text-sm font-medium text-white hover:border-accent transition"
+                      className="inline-flex items-center gap-2 rounded-md border border-line bg-surface/80 backdrop-blur px-6 py-3 text-sm font-medium text-ink hover:bg-surface-2 transition min-h-11"
                     >
                       Saya sudah punya akun
                     </Link>
@@ -97,10 +97,9 @@ export function LandingExperience() {
               </div>
             </div>
 
-            {/* Bottom row: stat panels as floating glass labels around Career Core */}
             <div className="pb-10">
-              <div className="mx-auto max-w-7xl px-6">
-                <dl className="grid grid-cols-3 gap-3 sm:gap-6 max-w-2xl pointer-events-auto">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6">
+                <dl className="grid grid-cols-3 gap-2 sm:gap-6 max-w-2xl pointer-events-auto">
                   {[
                     { k: "5–20", v: "menit micro-task" },
                     { k: "4+", v: "bidang karier" },
@@ -108,14 +107,14 @@ export function LandingExperience() {
                   ].map((s) => (
                     <div
                       key={s.v}
-                      className="rounded-lg border border-white/10 bg-black/40 backdrop-blur-md px-4 py-3"
+                      className="rounded-lg border border-line bg-surface/85 backdrop-blur-md px-3 sm:px-4 py-3"
                     >
-                      <dt className="font-display text-2xl sm:text-3xl text-accent">{s.k}</dt>
+                      <dt className="font-display text-2xl sm:text-3xl text-primary-cyan">{s.k}</dt>
                       <dd className="eyebrow mt-1 text-[10px]">{s.v}</dd>
                     </div>
                   ))}
                 </dl>
-                <p className="mt-6 eyebrow text-white/50 text-[10px]">
+                <p className="mt-6 eyebrow text-ink-muted text-[10px]">
                   Scroll to explore · Career Core
                 </p>
               </div>
@@ -124,7 +123,6 @@ export function LandingExperience() {
         </div>
       </section>
 
-      {/* Accessible text alternative for content rendered inside Canvas panels */}
       <section className="sr-only" aria-label="Bagaimana Mission Engine Bekerja">
         <h2>Bukan kursus. Bukan kuis. Ini simulasi kerja.</h2>
         <ul>
@@ -141,8 +139,8 @@ export function LandingExperience() {
 
 function HeroBackdrop() {
   return (
-    <div className="h-full w-full bg-gradient-to-b from-[#02060c] via-[#06101f] to-[#02060c] grid place-items-center">
-      <div className="h-40 w-40 rounded-full bg-accent/10 blur-3xl animate-pulse" />
+    <div className="h-full w-full bg-gradient-to-b from-background via-background-secondary to-background grid place-items-center">
+      <div className="h-40 w-40 rounded-full bg-primary-cyan/10 blur-3xl animate-pulse" />
     </div>
   );
 }
