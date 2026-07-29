@@ -35,8 +35,8 @@ function drawAbstract(
     height,
   );
 
-  backgroundGradient.addColorStop(0, "#0b1226");
-  backgroundGradient.addColorStop(1, "#03060c");
+  backgroundGradient.addColorStop(0, "#EEF2F7");
+  backgroundGradient.addColorStop(1, "#F8FAFC");
 
   ctx.fillStyle = backgroundGradient;
   ctx.fillRect(0, 0, width, height);
@@ -187,7 +187,7 @@ function drawOverlay(
   ctx.restore();
 
   ctx.save();
-  ctx.fillStyle = active ? accent : "#94a3b8";
+  ctx.fillStyle = active ? accent : "#64748B";
   ctx.font = "600 22px ui-sans-serif, system-ui, sans-serif";
   ctx.fillText(active ? "CAREER FIELD" : "COMING SOON", 40, 60);
   ctx.restore();
@@ -245,7 +245,7 @@ function drawOverlay(
 
   ctx.save();
   ctx.globalAlpha = 0.055;
-  ctx.fillStyle = "#000000";
+  ctx.fillStyle = "#F8FAFC";
 
   for (let y = 0; y < height; y += 3) {
     ctx.fillRect(0, y, width, 1);
@@ -255,7 +255,7 @@ function drawOverlay(
 
   ctx.save();
   ctx.globalAlpha = 0.025;
-  ctx.fillStyle = "#ff0033";
+  ctx.fillStyle = "#DC2626";
   ctx.fillRect(0, 0, width, height);
   ctx.restore();
 }
@@ -487,7 +487,7 @@ export function CareerScreen({
         receiveShadow
       >
         <meshStandardMaterial
-          color="#09101e"
+          color="#FFFFFF"
           metalness={0.9}
           roughness={0.28}
         />
@@ -501,7 +501,7 @@ export function CareerScreen({
         castShadow
       >
         <meshStandardMaterial
-          color="#02050b"
+          color="#FFFFFF"
           metalness={0.58}
           roughness={0.5}
         />

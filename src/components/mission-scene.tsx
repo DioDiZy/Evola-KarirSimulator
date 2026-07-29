@@ -26,7 +26,7 @@ function Panel({
     }
   });
 
-  const color = selected ? "#f4a15a" : hovered ? "#c9884a" : broken ? "#8a4a2a" : "#3a3a44";
+  const color = selected ? "#0891B2" : hovered ? "#c9884a" : broken ? "#8a4a2a" : "#3a3a44";
   return (
     <group position={position}>
       <Float floatIntensity={selected ? 0.8 : 0.2} rotationIntensity={0.1} speed={1.2}>
@@ -60,7 +60,7 @@ export function MissionScene({
 }) {
   return (
     <Canvas dpr={[1, 2]} camera={{ position: [0, 1.5, 6], fov: 45 }} style={{ width: "100%", height: "100%" }}>
-      <color attach="background" args={["#0a0a0d"]} />
+      <color attach="background" args={["#F8FAFC"]} />
       <ambientLight intensity={0.5} />
       <pointLight position={[3, 4, 3]} intensity={1.6} color="#ffb27a" />
       <pointLight position={[-3, -2, 2]} intensity={0.8} color="#6ea0ff" />

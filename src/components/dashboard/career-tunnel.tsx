@@ -29,12 +29,12 @@ import { TunnelEnvironment } from "./tunnel-environment";
 export type { CareerTunnelField };
 
 const ACCENTS = [
-  "#7dd3fc",
-  "#bef2de",
-  "#a78bfa",
-  "#38bdf8",
-  "#f472b6",
-  "#fbbf24",
+  "#0891B2",
+  "#0EA5E9",
+  "#7C3AED",
+  "#0EA5E9",
+  "#A78BFA",
+  "#D97706",
 ];
 
 /**
@@ -376,7 +376,7 @@ export function CareerTunnel({
 
   if (webglStatus === "checking") {
     return (
-      <div className="h-[70vh] rounded-2xl bg-gradient-to-b from-[#03060c] to-[#02060c] animate-pulse" />
+      <div className="h-[70vh] rounded-2xl bg-gradient-to-b from-[#F8FAFC] to-[#F8FAFC] animate-pulse" />
     );
   }
 
@@ -410,7 +410,7 @@ export function CareerTunnel({
 
   return (
     <div className="relative">
-      <div className="relative h-[80vh] min-h-[520px] overflow-hidden rounded-2xl border border-white/5 bg-[#02060c]">
+      <div className="relative h-[80vh] min-h-[520px] overflow-hidden rounded-2xl border border-white/5 bg-[#F8FAFC]">
         <Canvas
           dpr={[1, 1.5]}
           camera={{
@@ -437,7 +437,7 @@ export function CareerTunnel({
               THREE.SRGBColorSpace;
 
             scene.fog = new THREE.Fog(
-              "#02060c",
+              "#F8FAFC",
               10,
               38,
             );
