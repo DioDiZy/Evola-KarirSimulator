@@ -22,10 +22,10 @@ export type ChamberTrack = {
   __z?: number;
 };
 
-const ACCENT = "#f4a15a";
-const CYAN = "#5eead4";
-const VIOLET = "#a78bfa";
-const TRACK_COLORS = [ACCENT, CYAN, VIOLET, "#f472b6", "#60a5fa"];
+const ACCENT = "#0891B2";
+const CYAN = "#2563EB";
+const VIOLET = "#7C3AED";
+const TRACK_COLORS = [ACCENT, CYAN, VIOLET, "#A78BFA", "#65A30D"];
 
 /**
  * TrackPedestal — a floating monolith representing a Career Track.
@@ -82,7 +82,7 @@ function TrackPedestal({
         {/* Base plinth */}
         <mesh position={[0, -0.9, 0]} castShadow>
           <cylinderGeometry args={[0.75, 0.9, 0.2, 32]} />
-          <meshStandardMaterial color="#0d1420" metalness={0.7} roughness={0.35} />
+          <meshStandardMaterial color="#F1F5F9" metalness={0.7} roughness={0.35} />
         </mesh>
 
         {/* Monolith */}
@@ -107,7 +107,7 @@ function TrackPedestal({
         >
           <boxGeometry args={[1.1, 2.1, 0.35]} />
           <meshStandardMaterial
-            color={locked ? "#1a2030" : "#0a1420"}
+            color={locked ? "#E2E8F0" : "#0a1420"}
             emissive={locked ? "#334155" : color}
             emissiveIntensity={0.55}
             metalness={0.6}
@@ -118,7 +118,7 @@ function TrackPedestal({
         {/* Orbit ring */}
         <mesh ref={ring} rotation={[Math.PI / 2, 0, 0]} position={[0, 0.2, 0]}>
           <torusGeometry args={[1.05, 0.012, 12, 96]} />
-          <meshBasicMaterial color={locked ? "#475569" : color} toneMapped={false} />
+          <meshBasicMaterial color={locked ? "#64748B" : color} toneMapped={false} />
         </mesh>
 
         {/* Nameplate */}
@@ -128,7 +128,7 @@ function TrackPedestal({
           maxWidth={2}
           anchorX="center"
           anchorY="middle"
-          color="#f7f2e8"
+          color="#0F172A"
         >
           {track.name}
         </Text>
@@ -137,7 +137,7 @@ function TrackPedestal({
           fontSize={0.075}
           anchorX="center"
           anchorY="middle"
-          color={locked ? "#94a3b8" : color}
+          color={locked ? "#64748B" : color}
         >
           {locked ? "SEGERA HADIR" : "TRACK AKTIF · KLIK UNTUK MASUK"}
         </Text>
@@ -232,7 +232,7 @@ function Chamber({
           depthScale={1.1}
           minDepthThreshold={0.5}
           maxDepthThreshold={1.4}
-          color="#050b16"
+          color="#FFFFFF"
           metalness={0.7}
         />
       </mesh>
@@ -249,7 +249,7 @@ function Chamber({
         fontSize={0.6}
         anchorX="center"
         anchorY="middle"
-        color="#f7f2e8"
+        color="#0F172A"
       >
         {fieldName.toUpperCase()}
       </Text>
@@ -311,10 +311,10 @@ export function FieldChamberScene({
       gl={{ powerPreference: "high-performance", antialias: !isMobile, alpha: false }}
       onCreated={({ gl, scene }) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping;
-        scene.fog = new THREE.Fog("#02060c", 8, 26);
+        scene.fog = new THREE.Fog("#F8FAFC", 8, 26);
       }}
     >
-      <color attach="background" args={["#02060c"]} />
+      <color attach="background" args={["#F8FAFC"]} />
       <Chamber tracks={tracks} onArrive={onArrive} fieldName={fieldName} fieldColor={fieldColor} />
       {!isMobile && (
         <EffectComposer>

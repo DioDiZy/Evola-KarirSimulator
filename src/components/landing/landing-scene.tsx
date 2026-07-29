@@ -59,10 +59,10 @@ export function LandingScene() {
       onCreated={({ gl, scene }) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping;
         gl.outputColorSpace = THREE.SRGBColorSpace;
-        scene.fog = new THREE.Fog("#02060c", 8, 32);
+        scene.fog = new THREE.Fog("#F8FAFC", 8, 32);
       }}
     >
-      <color attach="background" args={["#02060c"]} />
+      <color attach="background" args={["#F8FAFC"]} />
       <AdaptiveDpr pixelated />
 
       <ScrollControls pages={3} damping={0.28} distance={1}>
@@ -74,7 +74,7 @@ export function LandingScene() {
 
       {!isMobile && (
         <EffectComposer>
-          <Bloom intensity={0.7} luminanceThreshold={0.4} luminanceSmoothing={0.9} mipmapBlur />
+          <Bloom intensity={0.3} luminanceThreshold={0.4} luminanceSmoothing={0.9} mipmapBlur />
           <Vignette eskil={false} offset={0.2} darkness={0.85} />
         </EffectComposer>
       )}

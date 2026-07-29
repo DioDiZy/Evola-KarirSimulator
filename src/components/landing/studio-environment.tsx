@@ -37,7 +37,7 @@ export function StudioEnvironment({ isMobile }: Props) {
           depthScale={1.2}
           minDepthThreshold={0.4}
           maxDepthThreshold={1.4}
-          color="#060911"
+          color="#EEF2F7"
           metalness={0.6}
           mirror={0}
         />
@@ -46,47 +46,47 @@ export function StudioEnvironment({ isMobile }: Props) {
       {/* Ceiling */}
       <mesh position={[0, 4.5, -halfLen + length / 2]}>
         <boxGeometry args={[22, 0.2, length]} />
-        <meshStandardMaterial color="#03060c" roughness={0.9} metalness={0.2} />
+        <meshStandardMaterial color="#F8FAFC" roughness={0.9} metalness={0.2} />
       </mesh>
 
       {/* Left wall */}
       <mesh position={[-10.5, 1.15, -halfLen + length / 2]}>
         <boxGeometry args={[0.4, 6.8, length]} />
-        <meshStandardMaterial color="#080f1c" roughness={0.55} metalness={0.55} />
+        <meshStandardMaterial color="#F1F5F9" roughness={0.55} metalness={0.55} />
       </mesh>
 
       {/* Right wall */}
       <mesh position={[10.5, 1.15, -halfLen + length / 2]}>
         <boxGeometry args={[0.4, 6.8, length]} />
-        <meshStandardMaterial color="#080f1c" roughness={0.55} metalness={0.55} />
+        <meshStandardMaterial color="#F1F5F9" roughness={0.55} metalness={0.55} />
       </mesh>
 
       {/* Neon amber rails */}
       <mesh position={[-10.28, -1.9, -halfLen + length / 2]}>
         <boxGeometry args={[0.06, 0.08, length]} />
-        <meshBasicMaterial color="#f4a15a" toneMapped={false} />
+        <meshBasicMaterial color="#0891B2" toneMapped={false} />
       </mesh>
       <mesh position={[10.28, -1.9, -halfLen + length / 2]}>
         <boxGeometry args={[0.06, 0.08, length]} />
-        <meshBasicMaterial color="#5eead4" toneMapped={false} />
+        <meshBasicMaterial color="#2563EB" toneMapped={false} />
       </mesh>
 
       {/* Mezzanine catwalk (upper platform on right side) */}
       <mesh position={[7.5, 1.1, -14]}>
         <boxGeometry args={[5, 0.12, 8]} />
-        <meshStandardMaterial color="#0b1428" metalness={0.8} roughness={0.35} />
+        <meshStandardMaterial color="#F1F5F9" metalness={0.8} roughness={0.35} />
       </mesh>
       {/* Mezzanine railing */}
       <mesh position={[5.05, 1.6, -14]}>
         <boxGeometry args={[0.05, 1, 8]} />
-        <meshBasicMaterial color="#5eead4" toneMapped={false} />
+        <meshBasicMaterial color="#2563EB" toneMapped={false} />
       </mesh>
 
       {/* Stair (simple) */}
       {Array.from({ length: 6 }).map((_, i) => (
         <mesh key={i} position={[4.5, -1.7 + i * 0.28, -10 + i * 0.4]}>
           <boxGeometry args={[1.2, 0.08, 0.5]} />
-          <meshStandardMaterial color="#0e1a30" metalness={0.7} roughness={0.4} />
+          <meshStandardMaterial color="#F1F5F9" metalness={0.7} roughness={0.4} />
         </mesh>
       ))}
 
@@ -95,13 +95,13 @@ export function StudioEnvironment({ isMobile }: Props) {
         <group key={i} position={[-6, -1.5, z]}>
           <mesh>
             <boxGeometry args={[3, 0.1, 1.4]} />
-            <meshStandardMaterial color="#0a1220" metalness={0.7} roughness={0.35} />
+            <meshStandardMaterial color="#F1F5F9" metalness={0.7} roughness={0.35} />
           </mesh>
           <mesh position={[0, 0.5, -0.3]}>
             <boxGeometry args={[1.6, 0.9, 0.05]} />
             <meshStandardMaterial
-              color="#0a1220"
-              emissive="#5eead4"
+              color="#F1F5F9"
+              emissive="#2563EB"
               emissiveIntensity={0.4}
               roughness={0.3}
             />
@@ -114,11 +114,11 @@ export function StudioEnvironment({ isMobile }: Props) {
         <group key={`panel-${z}`}>
           <mesh position={[-10.29, 1, z]}>
             <boxGeometry args={[0.02, 5, 0.06]} />
-            <meshStandardMaterial color="#0d182c" metalness={0.7} roughness={0.4} />
+            <meshStandardMaterial color="#F1F5F9" metalness={0.7} roughness={0.4} />
           </mesh>
           <mesh position={[10.29, 1, z]}>
             <boxGeometry args={[0.02, 5, 0.06]} />
-            <meshStandardMaterial color="#0d182c" metalness={0.7} roughness={0.4} />
+            <meshStandardMaterial color="#F1F5F9" metalness={0.7} roughness={0.4} />
           </mesh>
         </group>
       ))}
@@ -128,10 +128,10 @@ export function StudioEnvironment({ isMobile }: Props) {
         <group key={`lamp-${i}`} position={[0, 4.38, z]}>
           <mesh>
             <boxGeometry args={[3, 0.06, 0.35]} />
-            <meshBasicMaterial color="#ffe4c4" toneMapped={false} />
+            <meshBasicMaterial color="#A78BFA" toneMapped={false} />
           </mesh>
           {!isMobile && i % 2 === 0 && (
-            <pointLight position={[0, -0.4, 0]} intensity={5} distance={11} color="#ffd7a8" decay={2} />
+            <pointLight position={[0, -0.4, 0]} intensity={5} distance={11} color="#A78BFA" decay={2} />
           )}
         </group>
       ))}
@@ -145,14 +145,14 @@ export function StudioEnvironment({ isMobile }: Props) {
               position={[0, 3.8, z]}
               intensity={4}
               distance={12}
-              color="#ffd7a8"
+              color="#A78BFA"
               decay={2}
             />
           ))}
 
       {/* Ambient */}
       <ambientLight intensity={0.22} />
-      <hemisphereLight args={["#6a5aa8", "#02040a", 0.35]} />
+      <hemisphereLight args={["#A78BFA", "#EEF2F7", 0.35]} />
     </group>
   );
 }

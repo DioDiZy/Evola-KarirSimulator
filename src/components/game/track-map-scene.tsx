@@ -15,9 +15,9 @@ export type MapEpisode = {
 };
 export type MapLevel = { id: string; name: string; status: string; description: string | null };
 
-const ACCENT = "#f4a15a";
-const CYAN = "#5eead4";
-const VIOLET = "#a78bfa";
+const ACCENT = "#0891B2";
+const CYAN = "#2563EB";
+const VIOLET = "#7C3AED";
 
 type Node = {
   ep: MapEpisode;
@@ -83,7 +83,7 @@ function EpisodeNode({
         >
           <cylinderGeometry args={[0.55, 0.55, 0.18, 6]} />
           <meshStandardMaterial
-            color={node.locked ? "#1a2030" : "#0a1420"}
+            color={node.locked ? "#E2E8F0" : "#0a1420"}
             emissive={node.locked ? "#334155" : node.color}
             emissiveIntensity={0.55}
             metalness={0.65}
@@ -96,11 +96,11 @@ function EpisodeNode({
         {/* Halo ring */}
         <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
           <torusGeometry args={[0.7, 0.01, 10, 64]} />
-          <meshBasicMaterial color={node.locked ? "#475569" : node.color} toneMapped={false} />
+          <meshBasicMaterial color={node.locked ? "#64748B" : node.color} toneMapped={false} />
         </mesh>
 
         {/* Number/status pip */}
-        <Text position={[0, 0.12, 0]} fontSize={0.22} anchorX="center" anchorY="middle" color="#f7f2e8" rotation={[-Math.PI / 2, 0, 0]}>
+        <Text position={[0, 0.12, 0]} fontSize={0.22} anchorX="center" anchorY="middle" color="#0F172A" rotation={[-Math.PI / 2, 0, 0]}>
           {node.done ? "✓" : node.locked ? "•" : "→"}
         </Text>
 
@@ -110,7 +110,7 @@ function EpisodeNode({
           maxWidth={1.6}
           anchorX="center"
           anchorY="middle"
-          color="#f7f2e8"
+          color="#0F172A"
         >
           {node.ep.name}
         </Text>
@@ -197,12 +197,12 @@ function Map({
           mixStrength={35}
           roughness={0.9}
           depthScale={1}
-          color="#050b16"
+          color="#FFFFFF"
           metalness={0.65}
         />
       </mesh>
 
-      <Text position={[0, 3.4, -8]} fontSize={0.5} anchorX="center" anchorY="middle" color="#f7f2e8">
+      <Text position={[0, 3.4, -8]} fontSize={0.5} anchorX="center" anchorY="middle" color="#0F172A">
         {trackName.toUpperCase()}
       </Text>
       <Text position={[0, 2.9, -8]} fontSize={0.12} anchorX="center" anchorY="middle" color={ACCENT}>
@@ -293,10 +293,10 @@ export function TrackMapScene({
       gl={{ powerPreference: "high-performance", antialias: !isMobile, alpha: false }}
       onCreated={({ gl, scene }) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping;
-        scene.fog = new THREE.Fog("#02060c", 10, 32);
+        scene.fog = new THREE.Fog("#F8FAFC", 10, 32);
       }}
     >
-      <color attach="background" args={["#02060c"]} />
+      <color attach="background" args={["#F8FAFC"]} />
       <Map nodes={nodes} onArrive={onArrive} trackName={trackName} />
       {!isMobile && (
         <EffectComposer>

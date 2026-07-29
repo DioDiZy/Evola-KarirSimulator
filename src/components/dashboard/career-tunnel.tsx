@@ -29,12 +29,11 @@ import { TunnelEnvironment } from "./tunnel-environment";
 export type { CareerTunnelField };
 
 const ACCENTS = [
-  "#7dd3fc",
-  "#bef2de",
-  "#a78bfa",
-  "#38bdf8",
-  "#f472b6",
-  "#fbbf24",
+  "#0891B2",
+  "#2563EB",
+  "#7C3AED",
+  "#A78BFA",
+  "#65A30D",
 ];
 
 /**
@@ -376,7 +375,7 @@ export function CareerTunnel({
 
   if (webglStatus === "checking") {
     return (
-      <div className="h-[70vh] rounded-2xl bg-gradient-to-b from-[#03060c] to-[#02060c] animate-pulse" />
+      <div className="h-[60vh] sm:h-[70vh] rounded-2xl bg-background-secondary animate-pulse" />
     );
   }
 
@@ -410,7 +409,8 @@ export function CareerTunnel({
 
   return (
     <div className="relative">
-      <div className="relative h-[80vh] min-h-[520px] overflow-hidden rounded-2xl border border-white/5 bg-[#02060c]">
+      <div className="relative h-[70vh] sm:h-[80vh] min-h-[440px] overflow-hidden rounded-2xl border border-line bg-background-secondary">
+
         <Canvas
           dpr={[1, 1.5]}
           camera={{
@@ -437,7 +437,7 @@ export function CareerTunnel({
               THREE.SRGBColorSpace;
 
             scene.fog = new THREE.Fog(
-              "#02060c",
+              "#F8FAFC",
               10,
               38,
             );
@@ -461,7 +461,7 @@ export function CareerTunnel({
           {!isMobile && (
             <EffectComposer>
               <Bloom
-                intensity={0.6}
+                intensity={0.25}
                 luminanceThreshold={0.35}
                 luminanceSmoothing={0.9}
                 mipmapBlur
@@ -478,18 +478,18 @@ export function CareerTunnel({
           )}
         </Canvas>
 
-        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between p-6">
-          <div>
-            <p className="eyebrow text-white/70">
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4 sm:p-6">
+          <div className="min-w-0">
+            <p className="eyebrow text-ink-muted">
               Bidang
             </p>
 
-            <p className="mt-1 font-display text-xl text-white">
+            <p className="mt-1 font-display text-lg sm:text-xl text-ink truncate">
               {active?.name}
             </p>
           </div>
 
-          <p className="font-mono text-sm text-white/70">
+          <p className="font-mono text-sm text-ink-dim shrink-0">
             {String(
               safeActiveIndex + 1,
             ).padStart(2, "0")}{" "}
@@ -500,12 +500,13 @@ export function CareerTunnel({
           </p>
         </div>
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center p-6">
-          <p className="text-xs uppercase tracking-[0.3em] text-white/60">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center p-4 sm:p-6">
+          <p className="text-xs uppercase tracking-[0.3em] text-ink-muted">
             Scroll to explore
           </p>
         </div>
       </div>
+
 
       <nav
         aria-label="Bidang karier"

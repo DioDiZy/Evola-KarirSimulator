@@ -43,8 +43,8 @@ export function CareerCore({ position = [0, 0.2, 0] as [number, number, number] 
         <mesh ref={core}>
           <icosahedronGeometry args={[0.75, 2]} />
           <meshStandardMaterial
-            color="#f4a15a"
-            emissive="#f4a15a"
+            color="#0891B2"
+            emissive="#0891B2"
             emissiveIntensity={1.2}
             roughness={0.25}
             metalness={0.8}
@@ -53,28 +53,28 @@ export function CareerCore({ position = [0, 0.2, 0] as [number, number, number] 
 
         <mesh>
           <sphereGeometry args={[0.55, 32, 32]} />
-          <meshBasicMaterial color="#ffd7a8" transparent opacity={0.35} />
+          <meshBasicMaterial color="#A78BFA" transparent opacity={0.35} />
         </mesh>
 
         <mesh ref={ring1} rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[1.35, 0.02, 16, 96]} />
-          <meshBasicMaterial color="#f4a15a" toneMapped={false} />
+          <meshBasicMaterial color="#0891B2" toneMapped={false} />
         </mesh>
         <mesh ref={ring2} rotation={[0, Math.PI / 3, 0]}>
           <torusGeometry args={[1.7, 0.015, 16, 96]} />
-          <meshBasicMaterial color="#5eead4" toneMapped={false} />
+          <meshBasicMaterial color="#2563EB" toneMapped={false} />
         </mesh>
         <mesh ref={ring3} rotation={[Math.PI / 4, 0, Math.PI / 6]}>
           <torusGeometry args={[2.05, 0.01, 12, 96]} />
-          <meshBasicMaterial color="#a78bfa" toneMapped={false} />
+          <meshBasicMaterial color="#7C3AED" toneMapped={false} />
         </mesh>
 
         <points ref={particles} geometry={particleGeom}>
-          <pointsMaterial size={0.03} color="#bef2de" transparent opacity={0.7} sizeAttenuation />
+          <pointsMaterial size={0.03} color="#0EA5E9" transparent opacity={0.7} sizeAttenuation />
         </points>
       </Float>
 
-      <pointLight position={[0, 0, 0]} intensity={4} color="#f4a15a" distance={8} decay={2} />
+      <pointLight position={[0, 0, 0]} intensity={4} color="#0891B2" distance={8} decay={2} />
     </group>
   );
 }

@@ -27,10 +27,10 @@ function Panels() {
           <mesh position={p.pos} rotation={p.rot} scale={p.scale}>
             <planeGeometry args={[1.2, 1.6]} />
             <meshStandardMaterial
-              color="#f4a15a"
+              color="#0891B2"
               transparent
               opacity={0.15}
-              emissive="#f4a15a"
+              emissive="#0891B2"
               emissiveIntensity={0.3}
               side={THREE.DoubleSide}
               wireframe={i % 3 === 0}
@@ -53,7 +53,7 @@ function Core() {
   return (
     <mesh ref={mesh}>
       <icosahedronGeometry args={[1, 3]} />
-      <MeshDistortMaterial color="#f4a15a" distort={0.35} speed={1.5} roughness={0.2} metalness={0.7} />
+      <MeshDistortMaterial color="#0891B2" distort={0.35} speed={1.5} roughness={0.2} metalness={0.7} />
     </mesh>
   );
 }
@@ -65,7 +65,7 @@ export function HeroScene() {
       camera={{ position: [0, 0.4, 6], fov: 45 }}
       style={{ width: "100%", height: "100%" }}
     >
-      <color attach="background" args={["#000000"]} />
+      <color attach="background" args={["#F8FAFC"]} />
       <ambientLight intensity={0.4} />
       <pointLight position={[5, 5, 5]} intensity={2} color="#ffb27a" />
       <pointLight position={[-5, -3, -3]} intensity={1} color="#5a8dff" />

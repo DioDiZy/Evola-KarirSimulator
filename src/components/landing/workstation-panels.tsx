@@ -12,17 +12,17 @@ const PANELS: Panel[] = [
   {
     title: "Keputusan yang berbobot",
     body: "Setiap pilihan ditimbang seperti di tempat kerja nyata.",
-    color: "#f4a15a",
+    color: "#0891B2",
   },
   {
     title: "Micro-task 5–20 menit",
     body: "Tugas kecil yang meniru pekerjaan harian. Bukan kursus.",
-    color: "#5eead4",
+    color: "#2563EB",
   },
   {
     title: "Career Credit permanen",
     body: "Kredit diberikan setelah episode. Tak berkurang karena gagal.",
-    color: "#a78bfa",
+    color: "#7C3AED",
   },
 ];
 
@@ -46,7 +46,7 @@ export function WorkstationPanels({ z = -14 }: { z?: number }) {
             {/* Glass panel */}
             <RoundedBox args={[3, 1.9, 0.05]} radius={0.06} smoothness={4}>
               <meshPhysicalMaterial
-                color="#050b18"
+                color="#FFFFFF"
                 emissive={p.color}
                 emissiveIntensity={0.25}
                 transmission={0.35}
@@ -71,7 +71,7 @@ export function WorkstationPanels({ z = -14 }: { z?: number }) {
               maxWidth={2.6}
               anchorX="center"
               anchorY="middle"
-              color="#f7f2e8"
+              color="#0F172A"
             >
               {p.title}
             </Text>
@@ -81,7 +81,7 @@ export function WorkstationPanels({ z = -14 }: { z?: number }) {
               maxWidth={2.6}
               anchorX="center"
               anchorY="middle"
-              color="#c8d4e6"
+              color="#334155"
               lineHeight={1.4}
             >
               {p.body}
