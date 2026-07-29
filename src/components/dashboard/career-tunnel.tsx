@@ -461,7 +461,7 @@ export function CareerTunnel({
           {!isMobile && (
             <EffectComposer>
               <Bloom
-                intensity={0.6}
+                intensity={0.25}
                 luminanceThreshold={0.35}
                 luminanceSmoothing={0.9}
                 mipmapBlur

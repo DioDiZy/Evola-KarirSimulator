@@ -62,11 +62,11 @@ export function TunnelEnvironment({ length, isMobile }: Props) {
       {/* Neon rails */}
       <mesh position={[-7.28, -1.9, -halfLen + length / 2]}>
         <boxGeometry args={[0.05, 0.06, length]} />
-        <meshBasicMaterial color="#22d3ee" toneMapped={false} />
+        <meshBasicMaterial color="#0891B2" toneMapped={false} />
       </mesh>
       <mesh position={[7.28, -1.9, -halfLen + length / 2]}>
         <boxGeometry args={[0.05, 0.06, length]} />
-        <meshBasicMaterial color="#22d3ee" toneMapped={false} />
+        <meshBasicMaterial color="#0891B2" toneMapped={false} />
       </mesh>
 
       {/* Wall panels for depth */}
@@ -100,7 +100,7 @@ export function TunnelEnvironment({ length, isMobile }: Props) {
         <pointLight key={`mlp-${i}`} position={[0, 2.9, z]} intensity={5} distance={10} color="#E2E8F0" decay={2} />
       ))}
 
-      <ambientLight intensity={0.25} />
+      <ambientLight intensity={0.7} />
       <hemisphereLight args={["#64748B", "#EEF2F7", 0.4]} />
     </group>
   );

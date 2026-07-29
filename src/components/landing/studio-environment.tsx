@@ -128,7 +128,7 @@ export function StudioEnvironment({ isMobile }: Props) {
         <group key={`lamp-${i}`} position={[0, 4.38, z]}>
           <mesh>
             <boxGeometry args={[3, 0.06, 0.35]} />
-            <meshBasicMaterial color="#ffe4c4" toneMapped={false} />
+            <meshBasicMaterial color="#A78BFA" toneMapped={false} />
           </mesh>
           {!isMobile && i % 2 === 0 && (
             <pointLight position={[0, -0.4, 0]} intensity={5} distance={11} color="#A78BFA" decay={2} />

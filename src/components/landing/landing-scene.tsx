@@ -74,7 +74,7 @@ export function LandingScene() {
 
       {!isMobile && (
         <EffectComposer>
-          <Bloom intensity={0.7} luminanceThreshold={0.4} luminanceSmoothing={0.9} mipmapBlur />
+          <Bloom intensity={0.3} luminanceThreshold={0.4} luminanceSmoothing={0.9} mipmapBlur />
           <Vignette eskil={false} offset={0.2} darkness={0.85} />
         </EffectComposer>
       )}

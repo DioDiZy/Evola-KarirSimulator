@@ -209,7 +209,7 @@ function drawOverlay(
   const fieldName = field.name.toUpperCase();
 
   ctx.save();
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = "#0F172A";
   ctx.shadowColor = "rgba(0,0,0,0.75)";
   ctx.shadowBlur = 16;
   ctx.font = "800 64px ui-sans-serif, system-ui, sans-serif";
@@ -238,7 +238,7 @@ function drawOverlay(
   ctx.restore();
 
   ctx.save();
-  ctx.fillStyle = active ? accent : "#64748b";
+  ctx.fillStyle = active ? accent : "#64748B";
   ctx.font = "700 20px ui-sans-serif, system-ui, sans-serif";
   ctx.fillText(active ? "VIEW MORE  →" : "LOCKED", 40, height - 50);
   ctx.restore();
@@ -540,7 +540,7 @@ export function CareerScreen({
         position={[0, 0, 1]}
         intensity={active ? 1.8 : 0.9}
         distance={5.5}
-        color={active ? accent : "#64748b"}
+        color={active ? accent : "#64748B"}
         decay={2}
       />
     </group>
