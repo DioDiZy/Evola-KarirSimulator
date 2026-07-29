@@ -409,7 +409,8 @@ export function CareerTunnel({
 
   return (
     <div className="relative">
-      <div className="relative h-[80vh] min-h-[520px] overflow-hidden rounded-2xl border border-white/5 bg-[#F8FAFC]">
+      <div className="relative h-[70vh] sm:h-[80vh] min-h-[440px] overflow-hidden rounded-2xl border border-line bg-background-secondary">
+
         <Canvas
           dpr={[1, 1.5]}
           camera={{
