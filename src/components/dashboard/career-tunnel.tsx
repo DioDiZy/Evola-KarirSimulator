@@ -30,11 +30,10 @@ export type { CareerTunnelField };
 
 const ACCENTS = [
   "#0891B2",
-  "#0EA5E9",
+  "#2563EB",
   "#7C3AED",
-  "#0EA5E9",
   "#A78BFA",
-  "#D97706",
+  "#65A30D",
 ];
 
 /**
