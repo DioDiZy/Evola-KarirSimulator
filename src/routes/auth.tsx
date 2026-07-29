@@ -9,7 +9,15 @@ import { Loader2 } from "lucide-react";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional(),
+  next: z.string().optional(),
 });
+
+function safeNext(next: string | undefined): string {
+  if (!next) return "/dashboard";
+  // same-origin relative paths only
+  if (!next.startsWith("/") || next.startsWith("//")) return "/dashboard";
+  return next;
+}
 
 export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
