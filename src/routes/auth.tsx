@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,7 +9,15 @@ import { Loader2 } from "lucide-react";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional(),
+  next: z.string().optional(),
 });
+
+function safeNext(next: string | undefined): string {
+  if (!next) return "/dashboard";
+  // same-origin relative paths only
+  if (!next.startsWith("/") || next.startsWith("//")) return "/dashboard";
+  return next;
+}
 
 export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
@@ -24,8 +32,8 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
-  const { mode } = Route.useSearch();
-  const navigate = useNavigate();
+  const { mode, next } = Route.useSearch();
+  const nextPath = safeNext(next);
   const [tab, setTab] = useState<"signin" | "signup">(mode ?? "signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,20 +42,21 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/dashboard", replace: true });
+      if (data.session) window.location.assign(nextPath);
     });
-  }, [navigate]);
+  }, [nextPath]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     try {
       if (tab === "signup") {
+        const returnUrl = new URL(nextPath, window.location.origin).toString();
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: returnUrl,
             data: { display_name: name || email.split("@")[0] },
           },
         });
@@ -57,7 +66,8 @@ function AuthPage() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
-      navigate({ to: "/dashboard", replace: true });
+      window.location.assign(nextPath);
+      return;
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Terjadi kesalahan");
     } finally {
@@ -67,14 +77,15 @@ function AuthPage() {
 
   async function handleGoogle() {
     setLoading(true);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
+    const returnUrl = new URL(nextPath, window.location.origin).toString();
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: returnUrl });
     if (result.error) {
       toast.error(result.error.message);
       setLoading(false);
       return;
     }
     if (result.redirected) return;
-    navigate({ to: "/dashboard", replace: true });
+    window.location.assign(nextPath);
   }
 
   return (
