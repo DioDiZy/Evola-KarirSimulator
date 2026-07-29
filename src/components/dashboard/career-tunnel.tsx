@@ -375,7 +375,7 @@ export function CareerTunnel({
 
   if (webglStatus === "checking") {
     return (
-      <div className="h-[70vh] rounded-2xl bg-gradient-to-b from-[#F8FAFC] to-[#F8FAFC] animate-pulse" />
+      <div className="h-[60vh] sm:h-[70vh] rounded-2xl bg-background-secondary animate-pulse" />
     );
   }
 
