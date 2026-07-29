@@ -5,9 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * CareerLab design system — Forged-inspired: deep near-black canvas,
- * off-white ink, single warm accent, editorial serif + mono pairing.
- * All colors in oklch. No hard-coded colors in components.
+ * CareerLab light futuristic design system.
+ * Palette anchored on slate neutrals with cyan / blue / violet accents.
  */
 
 @theme inline {
@@ -22,6 +21,7 @@
   --radius-2xl: calc(var(--radius) + 8px);
 
   --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
@@ -33,61 +33,75 @@
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-accent-glow: var(--accent-glow);
+  --color-primary-cyan: var(--primary-cyan);
+  --color-secondary-blue: var(--secondary-blue);
+  --color-reward: var(--reward);
   --color-success: var(--success);
   --color-warn: var(--warn);
   --color-danger: var(--danger);
+  --color-info: var(--info);
 
   --color-card: var(--surface);
   --color-card-foreground: var(--ink);
-  --color-popover: var(--surface-2);
+  --color-popover: var(--surface);
   --color-popover-foreground: var(--ink);
-  --color-primary: var(--accent);
-  --color-primary-foreground: var(--accent-ink);
+  --color-primary: var(--secondary-blue);
+  --color-primary-foreground: oklch(1 0 0);
   --color-secondary: var(--surface-2);
   --color-secondary-foreground: var(--ink);
   --color-muted: var(--surface-2);
   --color-muted-foreground: var(--ink-muted);
   --color-destructive: var(--danger);
-  --color-destructive-foreground: var(--ink);
+  --color-destructive-foreground: oklch(1 0 0);
   --color-border: var(--line);
   --color-input: var(--line);
-  --color-ring: var(--accent);
+  --color-ring: var(--primary-cyan);
   --color-ring-offset-background: var(--background);
 }
 
 :root {
   --radius: 0.5rem;
 
-  /* Canvas — near-black warm graphite */
-  --background: oklch(0.14 0.008 60);
-  --surface:    oklch(0.18 0.010 60);
-  --surface-2:  oklch(0.22 0.012 60);
+  /* Neutral / backgrounds — #F8FAFC / #EEF2F7 / #FFFFFF / #F1F5F9 */
+  --background:            oklch(0.984 0.003 247);
+  --background-secondary:  oklch(0.962 0.006 247);
+  --surface:               oklch(1 0 0);
+  --surface-2:             oklch(0.968 0.006 247);
 
-  /* Ink — warm off-white */
-  --foreground: oklch(0.96 0.010 80);
-  --ink:        oklch(0.96 0.010 80);
-  --ink-dim:    oklch(0.78 0.010 80);
-  --ink-muted:  oklch(0.58 0.012 70);
+  /* Ink — #0F172A / #334155 / #64748B */
+  --foreground: oklch(0.208 0.028 260);
+  --ink:        oklch(0.208 0.028 260);
+  --ink-dim:    oklch(0.372 0.026 260);
+  --ink-muted:  oklch(0.554 0.025 258);
 
-  /* Lines */
-  --line:         oklch(0.28 0.010 60);
-  --line-strong:  oklch(0.38 0.012 60);
+  /* Lines — #E2E8F0 */
+  --line:         oklch(0.898 0.013 250);
+  --line-strong:  oklch(0.820 0.018 250);
 
-  /* Accent — molten amber (Forged-inspired) */
-  --accent:       oklch(0.78 0.170 65);
-  --accent-ink:   oklch(0.15 0.020 60);
-  --accent-glow:  oklch(0.78 0.170 65 / 0.35);
+  /* Accent — violet #7C3AED w/ hover #A78BFA */
+  --accent:       oklch(0.540 0.245 293);
+  --accent-ink:   oklch(1 0 0);
+  --accent-glow:  oklch(0.540 0.245 293 / 0.25);
 
-  --success: oklch(0.78 0.140 155);
-  --warn:    oklch(0.82 0.150 85);
-  --danger:  oklch(0.65 0.220 25);
+  /* Brand */
+  --primary-cyan:    oklch(0.618 0.130 213); /* #0891B2 */
+  --secondary-blue:  oklch(0.552 0.222 265); /* #2563EB */
+  --reward:          oklch(0.618 0.170 130); /* #65A30D */
+
+  --success: oklch(0.640 0.170 148); /* #16A34A */
+  --warn:    oklch(0.660 0.160 55);  /* #D97706 */
+  --danger:  oklch(0.580 0.220 27);  /* #DC2626 */
+  --info:    oklch(0.680 0.140 220); /* #0EA5E9 */
 }
 
-/* CareerLab is always dark. */
-.dark { color-scheme: dark; }
+/* Light theme only — remove dark class overrides. */
 
 @layer base {
-  html, body { background: var(--background); color: var(--foreground); }
+  html, body {
+    background: var(--background);
+    color: var(--foreground);
+  }
+  html, body { max-width: 100%; overflow-x: hidden; }
   * { border-color: var(--line); }
   body {
     font-family: var(--font-sans);
@@ -95,7 +109,10 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  ::selection { background: var(--accent); color: var(--accent-ink); }
+  ::selection { background: var(--accent); color: oklch(1 0 0); }
+
+  /* Ensure images never break layout */
+  img, video, canvas { max-width: 100%; height: auto; }
 }
 
 @utility font-display { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.02em; }
@@ -113,6 +130,7 @@
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
 @utility surface-panel-2 {
@@ -123,8 +141,8 @@
 
 @utility grid-bg {
   background-image:
-    linear-gradient(to right, oklch(1 0 0 / 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, oklch(1 0 0 / 0.03) 1px, transparent 1px);
+    linear-gradient(to right, rgba(15, 23, 42, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.05) 1px, transparent 1px);
   background-size: 48px 48px;
 }
 
