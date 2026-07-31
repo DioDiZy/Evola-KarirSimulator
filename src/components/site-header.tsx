@@ -6,8 +6,12 @@ import { Flame, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 type Variant = "landing" | "app";
+type Tone = "light" | "dark";
 
-export function SiteHeader({ variant = "app" }: { variant?: Variant } = {}) {
+export function SiteHeader({
+  variant = "app",
+  tone = "light",
+}: { variant?: Variant; tone?: Tone } = {}) {
   const { user } = useSession();
   const navigate = useNavigate();
   const router = useRouter();
