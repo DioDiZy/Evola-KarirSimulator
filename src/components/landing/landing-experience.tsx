@@ -1,390 +1,314 @@
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import {
-  ArrowDown,
-  ArrowRight,
-  Sparkles,
-  Target,
-  Trophy,
-  type LucideIcon,
-} from "lucide-react";
+import { ArrowRight, Sparkles, Target, Trophy } from "lucide-react";
 
+import { ClientOnly } from "@/components/client-only";
 import { MISSION_ENGINE_PANELS } from "./workstation-panels";
 
-const HERO_STATISTICS = [
-  {
-    value: "5–20",
-    label: "menit micro-task",
-  },
-  {
-    value: "4+",
-    label: "bidang karier",
-  },
-  {
-    value: "Real",
-    label: "simulasi kerja",
-  },
-] as const;
+const LandingScene = lazy(() =>
+  import("./landing-scene").then((module) => ({
+    default: module.LandingScene,
+  })),
+);
 
-const PANEL_ICONS: LucideIcon[] = [Target, Sparkles, Trophy];
+function checkWebGL(): boolean {
+  try {
+    const canvas = document.createElement("canvas");
 
-export function LandingExperience() {
-  return (
-    <main className="relative overflow-x-clip bg-background">
-      <HeroSection />
-      <MissionEngineSection />
-    </main>
-  );
+    return Boolean(
+      window.WebGLRenderingContext &&
+      (canvas.getContext("webgl2") || canvas.getContext("webgl")),
+    );
+  } catch {
+    return false;
+  }
 }
 
-function HeroSection() {
+function prefersReducedMotion(): boolean {
+  try {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  } catch {
+    return false;
+  }
+}
+
+export function LandingExperience() {
+  const [mode, setMode] = useState<"checking" | "webgl" | "fallback">(
+    "checking",
+  );
+
+  useEffect(() => {
+    if (!checkWebGL() || prefersReducedMotion()) {
+      setMode("fallback");
+      return;
+    }
+
+    setMode("webgl");
+  }, []);
+
+  if (mode === "fallback") {
+    return <StaticHero />;
+  }
+
   return (
-    <section className="relative isolate min-h-[100svh] overflow-hidden bg-background">
-      {/* Background 2D */}
-      <div
-        aria-hidden="true"
-        className="
-          pointer-events-none absolute inset-0 -z-30
-          bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_62%,#eef6ff_100%)]
-        "
-      />
+    <div className="relative">
+      <section className="relative h-[300svh] md:h-[300vh]">
+        <div className="sticky top-0 isolate h-[100svh] w-full overflow-hidden md:h-screen">
+          <ClientOnly fallback={<HeroBackdrop />}>
+            <Suspense fallback={<HeroBackdrop />}>
+              {mode === "webgl" ? <LandingScene /> : <HeroBackdrop />}
+            </Suspense>
+          </ClientOnly>
 
-      {/* Dekorasi blur kiri */}
-      <div
-        aria-hidden="true"
-        className="
-          pointer-events-none absolute -left-40 top-1/4 -z-20
-          h-80 w-80 rounded-full bg-primary-cyan/5 blur-[100px]
-          sm:h-[500px] sm:w-[500px]
-        "
-      />
+          <div
+            aria-hidden="true"
+            className="
+              pointer-events-none absolute inset-0 z-10 md:hidden
+              bg-[linear-gradient(to_bottom,rgba(248,250,252,0.76)_0%,rgba(248,250,252,0.32)_42%,rgba(248,250,252,0.6)_68%,rgba(248,250,252,0.94)_100%)]
+            "
+          />
 
-      {/* Dekorasi blur kanan */}
-      <div
-        aria-hidden="true"
-        className="
-          pointer-events-none absolute -right-48 bottom-0 -z-20
-          h-96 w-96 rounded-full bg-accent/5 blur-[120px]
-          sm:h-[600px] sm:w-[600px]
-        "
-      />
+          <div className="pointer-events-none absolute inset-0 z-20 flex flex-col">
+            <div className="flex flex-1 items-start pt-28 md:items-center md:pt-0">
+              <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+                <div className="pointer-events-auto max-w-2xl">
+                  <p className="eyebrow text-ink-muted">Simulasi Kerja</p>
 
-      {/* Grid halus */}
-      <div
-        aria-hidden="true"
-        className="
-          pointer-events-none absolute inset-0 -z-10 opacity-[0.025]
-          [background-image:linear-gradient(to_right,currentColor_1px,transparent_1px),linear-gradient(to_bottom,currentColor_1px,transparent_1px)]
-          [background-size:40px_40px]
-        "
-      />
+                  <h1 className="mt-5 font-display text-[clamp(2.5rem,11vw,4.5rem)] leading-[0.98] tracking-[-0.03em] text-ink sm:mt-6 sm:leading-[1.05]">
+                    Rasakan dunia kerja
+                    <br />
+                    <span className="text-accent">sebelum benar-benar</span>
+                    <br />
+                    memasukinya.
+                  </h1>
 
-      <div
-        className="
-          mx-auto flex min-h-[100svh] w-full max-w-7xl flex-col
-          px-4 pb-8 pt-28
-          sm:px-6 sm:pb-10 sm:pt-32
-          lg:px-8 lg:pt-36
-        "
-      >
-        <div className="flex flex-1 items-center">
-          <div className="w-full max-w-5xl">
-            <p className="eyebrow text-ink-muted">Simulasi Kerja</p>
+                  <p className="mt-5 max-w-xl text-sm leading-relaxed text-ink-dim sm:mt-6 sm:text-lg">
+                    Masuki lingkungan kerja virtual. Hadapi situasi profesional.
+                    Ambil keputusan. Kerjakan micro-task nyata. Bangun performa
+                    dan Career Credit-mu sebelum wawancara pertama.
+                  </p>
 
-            <h1
-              className="
-                mt-5 max-w-5xl font-display
-                text-[clamp(2.75rem,10vw,7rem)]
-                leading-[0.92] tracking-[-0.045em] text-ink
-                sm:mt-6 sm:leading-[0.9]
-              "
-            >
-              Rasakan dunia kerja
-              <br />
-              <span className="text-accent">sebelum benar-benar</span>
-              <br />
-              memasukinya.
-            </h1>
+                  <div className="mt-7 flex flex-col items-stretch gap-3 sm:mt-10 sm:flex-row sm:items-center">
+                    <Link
+                      to="/auth"
+                      search={{ mode: "signup" }}
+                      className="
+                        inline-flex min-h-12 w-full items-center justify-center
+                        gap-2 rounded-md bg-primary px-6 py-3 text-sm
+                        font-medium text-primary-foreground transition
+                        hover:brightness-110 sm:w-auto
+                      "
+                    >
+                      Mulai Mission Pertama
+                      <ArrowRight className="h-4 w-4 shrink-0" />
+                    </Link>
 
-            <p
-              className="
-                mt-6 max-w-2xl text-base leading-relaxed text-ink-dim
-                sm:mt-8 sm:text-lg
-                lg:text-xl
-              "
-            >
-              Hadapi situasi kerja, ambil keputusan, dan selesaikan tugas
-              seperti seorang profesional. Bangun pengalaman dan rekam jejakmu
-              sebelum memasuki dunia kerja.
-            </p>
+                    <Link
+                      to="/auth"
+                      className="
+                        inline-flex min-h-12 w-full items-center justify-center
+                        gap-2 rounded-md border border-line bg-surface/90
+                        px-6 py-3 text-sm font-medium text-ink
+                        backdrop-blur-md transition hover:bg-surface-2 sm:w-auto
+                      "
+                    >
+                      Saya sudah punya akun
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-            <div
-              className="
-                mt-8 flex flex-col items-stretch gap-3
-                sm:mt-10 sm:flex-row sm:items-center
-              "
-            >
-              <Link
-                to="/auth"
-                search={{ mode: "signup" }}
-                className="
-                  inline-flex min-h-12 w-full items-center justify-center
-                  gap-2 rounded-md bg-primary px-6 py-3
-                  text-sm font-medium text-primary-foreground
-                  transition duration-200 hover:brightness-110
-                  focus-visible:outline-none
-                  focus-visible:ring-2
-                  focus-visible:ring-primary
-                  focus-visible:ring-offset-2
-                  sm:w-auto
-                "
-              >
-                Mulai Mission Pertama
-                <ArrowRight className="h-4 w-4 shrink-0" />
-              </Link>
+            <div className="pb-6 sm:pb-10">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6">
+                <dl className="pointer-events-auto grid max-w-2xl grid-cols-3 gap-2 sm:gap-6">
+                  {[
+                    {
+                      k: "5–20",
+                      v: "menit micro-task",
+                    },
+                    {
+                      k: "4+",
+                      v: "bidang karier",
+                    },
+                    {
+                      k: "3D",
+                      v: "workspace nyata",
+                    },
+                  ].map((item) => (
+                    <div
+                      key={item.v}
+                      className="
+                        min-w-0 rounded-lg border border-line
+                        bg-surface/90 px-3 py-3 backdrop-blur-md
+                        sm:px-4
+                      "
+                    >
+                      <dt className="font-display text-2xl text-primary-cyan sm:text-3xl">
+                        {item.k}
+                      </dt>
 
-              <Link
-                to="/auth"
-                className="
-                  inline-flex min-h-12 w-full items-center justify-center
-                  rounded-md border border-line bg-surface px-6 py-3
-                  text-sm font-medium text-ink
-                  transition duration-200 hover:bg-surface-2
-                  focus-visible:outline-none
-                  focus-visible:ring-2
-                  focus-visible:ring-primary
-                  focus-visible:ring-offset-2
-                  sm:w-auto
-                "
-              >
-                Saya sudah punya akun
-              </Link>
+                      <dd className="eyebrow mt-1 break-words text-[9px] leading-relaxed sm:text-[10px]">
+                        {item.v}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+
+                <p className="eyebrow mt-4 hidden text-[10px] text-ink-muted sm:block">
+                  Scroll to explore · Career Core
+                </p>
+              </div>
             </div>
           </div>
         </div>
+      </section>
 
-        <div className="mt-12 sm:mt-16">
-          <dl className="grid max-w-2xl grid-cols-3 gap-2 sm:gap-4">
-            {HERO_STATISTICS.map((item) => (
+      <section
+        className="sr-only"
+        aria-label="Bagaimana Mission Engine Bekerja"
+      >
+        <h2>Bukan kursus. Bukan kuis. Ini simulasi kerja.</h2>
+
+        <ul>
+          {MISSION_ENGINE_PANELS.map((panel) => (
+            <li key={panel.title}>
+              <strong>{panel.title}</strong>: {panel.body}
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+  );
+}
+
+function HeroBackdrop() {
+  return (
+    <div className="grid h-full w-full place-items-center bg-gradient-to-b from-background via-background-secondary to-background">
+      <div className="h-40 w-40 animate-pulse rounded-full bg-primary-cyan/10 blur-3xl" />
+    </div>
+  );
+}
+
+function StaticHero() {
+  return (
+    <>
+      <section className="relative min-h-[100svh] overflow-hidden">
+        <div className="grid-bg pointer-events-none absolute inset-0 opacity-40" />
+
+        <div className="relative mx-auto max-w-7xl px-4 pb-20 pt-32 sm:px-6 sm:pb-24">
+          <p className="eyebrow">Simulasi Kerja</p>
+
+          <h1 className="mt-6 max-w-4xl font-display text-[clamp(2.7rem,11vw,4.5rem)] leading-[0.98] tracking-[-0.03em] sm:leading-[1.02]">
+            Rasakan dunia kerja{" "}
+            <span className="text-accent">sebelum benar-benar</span>{" "}
+            memasukinya.
+          </h1>
+
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-ink-dim sm:text-lg">
+            Hadapi situasi kerja, ambil keputusan, dan selesaikan tugas seperti
+            seorang profesional. Bangun pengalaman dan rekam jejakmu sebelum
+            memasuki dunia kerja.
+          </p>
+
+          <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row">
+            <Link
+              to="/auth"
+              search={{ mode: "signup" }}
+              className="
+                inline-flex min-h-12 w-full items-center justify-center gap-2
+                rounded-md bg-accent px-6 py-3 text-sm font-medium
+                text-accent-ink transition hover:brightness-110 sm:w-auto
+              "
+            >
+              Coba Simulasi Pertamamu
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+
+            <Link
+              to="/auth"
+              className="
+                inline-flex min-h-12 w-full items-center justify-center
+                rounded-md border border-line bg-surface/80 px-6 py-3
+                text-sm font-medium text-ink sm:w-auto
+              "
+            >
+              Saya sudah punya akun
+            </Link>
+          </div>
+
+          <dl className="mt-12 grid max-w-lg grid-cols-3 gap-2 sm:mt-14 sm:gap-6">
+            {[
+              {
+                k: "5–20",
+                v: "menit micro-task",
+              },
+              {
+                k: "4+",
+                v: "bidang karier",
+              },
+              {
+                k: "3D",
+                v: "workspace nyata",
+              },
+            ].map((item) => (
               <div
-                key={item.label}
-                className="
-                  min-w-0 rounded-lg border border-line
-                  bg-surface/90 px-3 py-4 shadow-sm
-                  backdrop-blur-sm sm:px-5 sm:py-5
-                "
+                key={item.v}
+                className="rounded-lg border border-line bg-surface/80 p-3 sm:border-0 sm:bg-transparent sm:p-0"
               >
-                <dt
-                  className="
-                    font-display text-2xl text-primary-cyan
-                    sm:text-3xl
-                  "
-                >
-                  {item.value}
+                <dt className="font-display text-2xl text-accent sm:text-3xl">
+                  {item.k}
                 </dt>
 
-                <dd
-                  className="
-                    eyebrow mt-2 break-words
-                    text-[8px] leading-relaxed
-                    sm:text-[10px]
-                  "
-                >
-                  {item.label}
+                <dd className="eyebrow mt-1 break-words text-[9px] leading-relaxed sm:text-[10px]">
+                  {item.v}
                 </dd>
               </div>
             ))}
           </dl>
-
-          <a
-            href="#mission-engine"
-            className="
-              mt-5 inline-flex items-center gap-2 text-ink-muted
-              transition hover:text-ink
-              sm:mt-6
-            "
-          >
-            <ArrowDown className="h-4 w-4 animate-bounce" />
-
-            <span className="eyebrow text-[9px] sm:text-[10px]">
-              Scroll untuk melihat Mission Engine
-            </span>
-          </a>
         </div>
-      </div>
-    </section>
-  );
-}
+      </section>
 
-function MissionEngineSection() {
-  return (
-    <section
-      id="mission-engine"
-      aria-labelledby="mission-engine-title"
-      className="
-        relative scroll-mt-20 overflow-hidden
-        border-t border-line/60 bg-background
-      "
-    >
-      {/* Background 2D Mission Engine */}
-      <div
-        aria-hidden="true"
-        className="
-          pointer-events-none absolute inset-0
-          bg-[radial-gradient(circle_at_50%_10%,rgba(34,211,238,0.08),transparent_38%)]
-        "
-      />
+      <section className="border-t border-line/60">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24">
+          <p className="eyebrow">Bagaimana Mission Engine Bekerja</p>
 
-      <div
-        aria-hidden="true"
-        className="
-          pointer-events-none absolute inset-0 opacity-[0.025]
-          [background-image:linear-gradient(to_right,currentColor_1px,transparent_1px),linear-gradient(to_bottom,currentColor_1px,transparent_1px)]
-          [background-size:48px_48px]
-        "
-      />
-
-      <div
-        className="
-          relative mx-auto w-full max-w-7xl
-          px-4 py-20
-          sm:px-6 sm:py-24
-          lg:px-8 lg:py-32
-        "
-      >
-        <div className="max-w-3xl">
-          <p className="eyebrow text-ink-muted">Mission Engine</p>
-
-          <h2
-            id="mission-engine-title"
-            className="
-              mt-4 font-display text-4xl
-              leading-[1.05] tracking-[-0.03em] text-ink
-              sm:text-5xl
-              lg:text-6xl
-            "
-          >
-            Bukan kursus. Bukan kuis.
-            <br />
-            <span className="text-accent">Ini simulasi kerja.</span>
+          <h2 className="mt-4 max-w-2xl font-display text-4xl sm:text-5xl">
+            Bukan kursus. Bukan kuis. Ini simulasi kerja.
           </h2>
 
-          <p
-            className="
-              mt-6 max-w-2xl text-base leading-relaxed text-ink-dim
-              sm:text-lg
-            "
-          >
-            Ikuti alur misi, hadapi situasi profesional, dan selesaikan
-            pekerjaan berdasarkan bidang karier yang kamu pilih.
-          </p>
-        </div>
+          <div className="mt-12 grid gap-6 md:mt-14 md:grid-cols-3">
+            {[
+              {
+                icon: Target,
+                ...MISSION_ENGINE_PANELS[0],
+              },
+              {
+                icon: Sparkles,
+                ...MISSION_ENGINE_PANELS[1],
+              },
+              {
+                icon: Trophy,
+                ...MISSION_ENGINE_PANELS[2],
+              },
+            ].map((item) => {
+              const Icon = item.icon;
 
-        <div
-          className="
-            mt-12 grid gap-5
-            sm:mt-14
-            md:grid-cols-3 md:gap-6
-          "
-        >
-          {MISSION_ENGINE_PANELS.slice(0, 3).map((panel, index) => {
-            const Icon = PANEL_ICONS[index] ?? Target;
+              return (
+                <div key={item.title} className="surface-panel p-6 sm:p-8">
+                  <Icon className="h-6 w-6 text-accent" />
 
-            return (
-              <article
-                key={panel.title}
-                className="
-                    group relative overflow-hidden rounded-2xl
-                    border border-line bg-surface p-6
-                    shadow-sm transition duration-300
-                    hover:-translate-y-1
-                    hover:border-primary-cyan/30
-                    hover:shadow-lg
-                    sm:p-8
-                  "
-              >
-                <div
-                  aria-hidden="true"
-                  className="
-                      pointer-events-none absolute -right-16 -top-16
-                      h-40 w-40 rounded-full bg-primary-cyan/5
-                      blur-3xl transition duration-300
-                      group-hover:bg-primary-cyan/10
-                    "
-                />
+                  <h3 className="mt-6 font-display text-2xl">{item.title}</h3>
 
-                <div
-                  className="
-                      relative grid h-12 w-12 place-items-center
-                      rounded-xl border border-line
-                      bg-background
-                    "
-                >
-                  <Icon className="h-5 w-5 text-accent" />
-                </div>
-
-                <div className="relative">
-                  <p className="eyebrow mt-8 text-[9px] text-ink-muted">
-                    Tahap {String(index + 1).padStart(2, "0")}
-                  </p>
-
-                  <h3
-                    className="
-                        mt-3 font-display text-2xl
-                        leading-tight text-ink
-                        sm:text-3xl
-                      "
-                  >
-                    {panel.title}
-                  </h3>
-
-                  <p className="mt-4 leading-relaxed text-ink-dim">
-                    {panel.body}
+                  <p className="mt-3 leading-relaxed text-ink-dim">
+                    {item.body}
                   </p>
                 </div>
-              </article>
-            );
-          })}
-        </div>
-
-        <div
-          className="
-            mt-12 flex flex-col items-start justify-between gap-6
-            rounded-2xl border border-line bg-surface
-            p-6 shadow-sm
-            sm:mt-16 sm:flex-row sm:items-center sm:p-8
-          "
-        >
-          <div>
-            <p className="eyebrow text-ink-muted">Siap Memulai?</p>
-
-            <h3
-              className="
-                mt-3 max-w-xl font-display text-2xl
-                leading-tight text-ink
-                sm:text-3xl
-              "
-            >
-              Pilih bidang karier dan jalankan mission pertamamu.
-            </h3>
+              );
+            })}
           </div>
-
-          <Link
-            to="/auth"
-            search={{ mode: "signup" }}
-            className="
-              inline-flex min-h-12 w-full shrink-0
-              items-center justify-center gap-2
-              rounded-md bg-primary px-6 py-3
-              text-sm font-medium text-primary-foreground
-              transition duration-200 hover:brightness-110
-              sm:w-auto
-            "
-          >
-            Mulai Sekarang
-            <ArrowRight className="h-4 w-4" />
-          </Link>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
