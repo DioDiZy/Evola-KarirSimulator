@@ -39,6 +39,9 @@ export function SiteHeader({ variant = "app" }: { variant?: Variant } = {}) {
           <Link to="/dashboard" onClick={onNavigate} className="text-ink-dim hover:text-primary-cyan transition-colors min-h-11 inline-flex items-center">
             Dashboard
           </Link>
+          <Link to="/magang" onClick={onNavigate} className="text-ink-dim hover:text-primary-cyan transition-colors min-h-11 inline-flex items-center">
+            Magang
+          </Link>
           <Link to="/profile" onClick={onNavigate} className="text-ink-dim hover:text-primary-cyan transition-colors min-h-11 inline-flex items-center">
             Profil
           </Link>
