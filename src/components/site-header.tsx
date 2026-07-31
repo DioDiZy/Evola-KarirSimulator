@@ -76,9 +76,11 @@ export function SiteHeader({
       <>
         <header
           className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[min(94%,64rem)] rounded-full border transition-all duration-300 ${
-            scrolled
-              ? "border-line bg-surface/85 backdrop-blur-xl shadow-[0_8px_40px_-12px_rgba(15,23,42,0.12)]"
-              : "border-line/70 bg-surface/70 backdrop-blur-md"
+            tone === "dark"
+              ? `exp-nav ${scrolled ? "exp-nav-scrolled" : ""}`
+              : scrolled
+                ? "border-line bg-surface/85 backdrop-blur-xl shadow-[0_8px_40px_-12px_rgba(15,23,42,0.12)]"
+                : "border-line/70 bg-surface/70 backdrop-blur-md"
           }`}
           aria-label="Navigasi utama"
         >
