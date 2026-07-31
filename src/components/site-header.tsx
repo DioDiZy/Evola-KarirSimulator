@@ -6,8 +6,12 @@ import { Flame, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 type Variant = "landing" | "app";
+type Tone = "light" | "dark";
 
-export function SiteHeader({ variant = "app" }: { variant?: Variant } = {}) {
+export function SiteHeader({
+  variant = "app",
+  tone = "light",
+}: { variant?: Variant; tone?: Tone } = {}) {
   const { user } = useSession();
   const navigate = useNavigate();
   const router = useRouter();
@@ -72,9 +76,11 @@ export function SiteHeader({ variant = "app" }: { variant?: Variant } = {}) {
       <>
         <header
           className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[min(94%,64rem)] rounded-full border transition-all duration-300 ${
-            scrolled
-              ? "border-line bg-surface/85 backdrop-blur-xl shadow-[0_8px_40px_-12px_rgba(15,23,42,0.12)]"
-              : "border-line/70 bg-surface/70 backdrop-blur-md"
+            tone === "dark"
+              ? `exp-nav ${scrolled ? "exp-nav-scrolled" : ""}`
+              : scrolled
+                ? "border-line bg-surface/85 backdrop-blur-xl shadow-[0_8px_40px_-12px_rgba(15,23,42,0.12)]"
+                : "border-line/70 bg-surface/70 backdrop-blur-md"
           }`}
           aria-label="Navigasi utama"
         >
@@ -106,7 +112,9 @@ export function SiteHeader({ variant = "app" }: { variant?: Variant } = {}) {
         {open && (
           <div
             id="landing-mobile-menu"
-            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[min(94%,24rem)] rounded-2xl border border-line bg-surface/95 backdrop-blur-xl p-5 shadow-2xl md:hidden"
+            className={`fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[min(94%,24rem)] rounded-2xl border p-5 shadow-2xl md:hidden backdrop-blur-xl ${
+              tone === "dark" ? "exp-nav" : "border-line bg-surface/95"
+            }`}
           >
             <nav className="flex flex-col gap-4 text-base">
               <NavLinks onNavigate={() => setOpen(false)} />

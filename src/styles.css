@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss" source(none);
 @import "tw-animate-css";
 
@@ -154,6 +153,96 @@
     0 0 0 1px var(--accent-glow),
     0 20px 60px -20px var(--accent-glow);
 }
+/* ===== Career Experience (dark futuristic chapter world) ===== */
+:root {
+  --exp-bg: #030712;
+  --exp-bg-2: #050816;
+  --exp-surface: #07111f;
+  --exp-surface-2: #0b1120;
+  --exp-ink: #f8fafc;
+  --exp-ink-dim: #94a3b8;
+  --exp-cyan: #22d3ee;
+  --exp-blue: #3b82f6;
+  --exp-violet: #8b5cf6;
+  --exp-lime: #84cc16;
+}
+
+.exp-bg { background: var(--exp-bg); }
+.exp-ink { color: var(--exp-ink); }
+.exp-ink-dim { color: var(--exp-ink-dim); }
+.exp-cyan { color: var(--exp-cyan); }
+.exp-violet { color: var(--exp-violet); }
+
+.exp-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--exp-ink-dim);
+}
+
+.exp-card {
+  background: color-mix(in oklab, var(--exp-surface) 78%, transparent);
+  border: 1px solid color-mix(in oklab, var(--exp-cyan) 16%, transparent);
+  border-radius: 0.6rem;
+  padding: 1rem 1.1rem;
+  backdrop-filter: blur(10px);
+}
+
+.exp-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #030712;
+  background: var(--exp-cyan);
+  transition: filter 0.2s ease;
+}
+.exp-btn-primary:hover { filter: brightness(1.12); }
+
+.exp-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--exp-ink);
+  border: 1px solid color-mix(in oklab, var(--exp-ink) 22%, transparent);
+  background: color-mix(in oklab, var(--exp-surface) 55%, transparent);
+  backdrop-filter: blur(8px);
+}
+.exp-btn-ghost:hover { background: color-mix(in oklab, var(--exp-surface-2) 80%, transparent); }
+
+.exp-badge-active,
+.exp-badge-soon {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+}
+.exp-badge-active {
+  color: var(--exp-lime);
+  border: 1px solid color-mix(in oklab, var(--exp-lime) 40%, transparent);
+  background: color-mix(in oklab, var(--exp-lime) 12%, transparent);
+}
+.exp-badge-soon {
+  color: var(--exp-ink-dim);
+  border: 1px solid color-mix(in oklab, var(--exp-ink-dim) 30%, transparent);
+  background: color-mix(in oklab, var(--exp-ink-dim) 10%, transparent);
+}
+
+.exp-dot { background: color-mix(in oklab, var(--exp-ink-dim) 35%, transparent); }
+.exp-dot-active { background: var(--exp-cyan); }
+
 .career-tunnel-fullscreen {
   position: fixed;
   inset: 0;
@@ -206,4 +295,26 @@
   display: block;
   width: 100%;
   height: 100%;
+}
+/* Dark navbar during immersive experience */
+.exp-nav {
+  border-color: color-mix(in oklab, var(--exp-ink) 12%, transparent);
+  background: color-mix(in oklab, var(--exp-surface) 62%, transparent);
+  backdrop-filter: blur(14px);
+}
+.exp-nav-scrolled {
+  background: color-mix(in oklab, var(--exp-surface) 88%, transparent);
+  box-shadow: 0 10px 40px -18px rgba(0, 0, 0, 0.8);
+}
+.exp-nav a,
+.exp-nav button {
+  color: var(--exp-ink-dim);
+  border-color: color-mix(in oklab, var(--exp-ink) 16%, transparent);
+}
+.exp-nav a:hover,
+.exp-nav button:hover { color: var(--exp-cyan); }
+.exp-nav .font-display { color: var(--exp-ink); }
+.exp-nav a[href*="mode=signup"] {
+  color: #030712;
+  background: var(--exp-cyan);
 }

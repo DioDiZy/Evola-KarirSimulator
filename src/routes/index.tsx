@@ -1,10 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowRight } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { listFields } from "@/lib/careerlab.functions";
-import { LandingExperience } from "@/components/landing/landing-experience";
-import { CareerTunnel, type CareerTunnelField } from "@/components/dashboard/career-tunnel";
+import { CareerExperience } from "@/components/experience/career-experience";
+import type { CareerTunnelField } from "@/components/dashboard/career-screen";
 
 const FIELD_MEDIA: Record<string, string> = {
   "ui-ux-designer": "/images/career/ui-ux-designer.webp",
@@ -33,6 +32,8 @@ export const Route = createFileRoute("/")({
         content:
           "Simulasi karier interaktif untuk mahasiswa, siswa SMK, fresh graduate, dan career switcher.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   loader: ({ context }) => {
@@ -54,55 +55,18 @@ function LandingPage() {
   }));
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <SiteHeader variant="landing" />
+    <div className="min-h-screen flex flex-col exp-bg">
+      <SiteHeader variant="landing" tone="dark" />
       <main className="flex-1">
-        <LandingExperience />
-
-        <section className="relative border-t border-line/60 bg-background">
-          <div className="mx-auto max-w-7xl px-6 py-24">
-            <div className="flex flex-wrap items-end justify-between gap-6">
-              <div>
-                <p className="eyebrow">Bidang Karier · Field Gallery</p>
-                <h2 className="mt-4 font-display text-4xl sm:text-5xl">
-                  Pilih dunia yang ingin kamu rasakan.
-                </h2>
-              </div>
-              <p className="max-w-md text-ink-dim">
-                MVP fokus pada Teknologi Informasi. Bidang lain sedang disiapkan.
-              </p>
-            </div>
-            <div className="mt-10">
-              <CareerTunnel fields={careerFields} />
-            </div>
-          </div>
-        </section>
-
-        <section className="border-t border-line/60">
-          <div className="mx-auto max-w-4xl px-6 py-24 text-center">
-            <p className="eyebrow">Mulai Sekarang</p>
-            <h2 className="mt-6 font-display text-4xl sm:text-6xl">
-              Wawancara pertamamu jangan
-              <br />
-              jadi <span className="text-accent">simulasi pertamamu.</span>
-            </h2>
-            <Link
-              to="/auth"
-              search={{ mode: "signup" }}
-              className="mt-10 inline-flex items-center gap-2 rounded-md bg-accent px-6 py-3 text-sm font-medium text-accent-ink"
-            >
-              Buat Akun Gratis <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </section>
-
-        <footer className="border-t border-line mt-0">
-          <div className="mx-auto max-w-7xl px-6 py-10 flex flex-wrap items-center justify-between gap-4 text-sm text-ink-muted">
-            <p className="font-mono-cl">CareerLab · CITECH 2026 · Universitas Jember</p>
-            <p className="eyebrow">Mission Engine v1</p>
-          </div>
-        </footer>
+        <CareerExperience fields={careerFields} />
       </main>
+
+      <footer className="border-t border-white/5 exp-bg">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6 py-10 flex flex-wrap items-center justify-between gap-4 text-sm exp-ink-dim">
+          <p className="font-mono-cl">CareerLab · CITECH 2026 · Universitas Jember</p>
+          <p className="exp-eyebrow">Mission Engine v1</p>
+        </div>
+      </footer>
     </div>
   );
 }
