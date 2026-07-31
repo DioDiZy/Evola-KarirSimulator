@@ -1,13 +1,17 @@
+import { Suspense, useEffect, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { ScrollControls, useScroll } from "@react-three/drei";
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
-import { useRef } from "react";
 import * as THREE from "three";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { StudioEnvironment } from "./studio-environment";
 import { CareerCore } from "./career-core";
 import { WorkstationPanels } from "./workstation-panels";
+
+interface LandingSceneProps {
+  onReady?: () => void;
+}
 
 function CameraRig({ isMobile }: { isMobile: boolean }) {
   const scroll = useScroll();
@@ -100,42 +104,47 @@ function ProgressiveWorkstationPanels({ isMobile }: { isMobile: boolean }) {
   );
 }
 
-export function LandingScene() {
-  const isMobile = useIsMobile();
+/*
+ * Komponen ini hanya akan dirender setelah seluruh
+ * isi di dalam Suspense selesai dimuat.
+ */
+function SceneReady({ onReady }: { onReady?: () => void }) {
+  const hasRendered = useRef(false);
+  const frameCount = useRef(0);
 
+  useFrame(() => {
+    if (hasRendered.current) {
+      return;
+    }
+
+    frameCount.current += 1;
+
+    /*
+     * Tunggu beberapa frame agar Canvas benar-benar
+     * sudah tampil, bukan hanya berhasil dibuat.
+     */
+    if (frameCount.current >= 3) {
+      hasRendered.current = true;
+      onReady?.();
+    }
+  });
+
+  return null;
+}
+
+function SceneContent({
+  isMobile,
+  onReady,
+}: {
+  isMobile: boolean;
+  onReady?: () => void;
+}) {
   const corePosition: [number, number, number] = isMobile
     ? [0.8, -0.35, 0]
     : [0, 0.2, 0];
 
   return (
-    <Canvas
-      dpr={[1, isMobile ? 1.5 : 1.75]}
-      camera={{
-        position: [0, isMobile ? 0.75 : 0.6, isMobile ? 10.5 : 8],
-        fov: isMobile ? 46 : 48,
-        near: 0.1,
-        far: 120,
-      }}
-      gl={{
-        powerPreference: "high-performance",
-        antialias: true,
-        alpha: false,
-        preserveDrawingBuffer: false,
-      }}
-      onCreated={({ gl, scene }) => {
-        gl.toneMapping = THREE.ACESFilmicToneMapping;
-        gl.toneMappingExposure = 1;
-        gl.outputColorSpace = THREE.SRGBColorSpace;
-
-        scene.fog = new THREE.Fog(
-          "#F8FAFC",
-          isMobile ? 7 : 8,
-          isMobile ? 21 : 32,
-        );
-      }}
-    >
-      <color attach="background" args={["#F8FAFC"]} />
-
+    <>
       <ScrollControls pages={3} damping={isMobile ? 0.2 : 0.28} distance={1}>
         <CameraRig isMobile={isMobile} />
 
@@ -158,6 +167,66 @@ export function LandingScene() {
           <Vignette eskil={false} offset={0.2} darkness={0.85} />
         </EffectComposer>
       )}
+
+      <SceneReady onReady={onReady} />
+    </>
+  );
+}
+
+export function LandingScene({ onReady }: LandingSceneProps) {
+  const isMobile = useIsMobile();
+
+  /*
+   * Saat perubahan ukuran layar terjadi,
+   * Canvas akan menyesuaikan ukurannya kembali.
+   */
+  useEffect(() => {
+    const handleResize = () => {
+      window.dispatchEvent(new Event("resize"));
+    };
+
+    const timeout = window.setTimeout(handleResize, 100);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [isMobile]);
+
+  return (
+    <Canvas
+      dpr={[1, isMobile ? 1.5 : 1.75]}
+      camera={{
+        position: [0, isMobile ? 0.75 : 0.6, isMobile ? 10.5 : 8],
+        fov: isMobile ? 46 : 48,
+        near: 0.1,
+        far: 120,
+      }}
+      gl={{
+        powerPreference: "high-performance",
+        antialias: true,
+        alpha: false,
+        preserveDrawingBuffer: false,
+      }}
+      fallback={<div className="h-full w-full bg-[#F8FAFC]" />}
+      onCreated={({ gl, scene }) => {
+        gl.toneMapping = THREE.ACESFilmicToneMapping;
+
+        gl.toneMappingExposure = 1;
+
+        gl.outputColorSpace = THREE.SRGBColorSpace;
+
+        scene.fog = new THREE.Fog(
+          "#F8FAFC",
+          isMobile ? 7 : 8,
+          isMobile ? 21 : 32,
+        );
+      }}
+    >
+      <color attach="background" args={["#F8FAFC"]} />
+
+      <Suspense fallback={null}>
+        <SceneContent isMobile={isMobile} onReady={onReady} />
+      </Suspense>
     </Canvas>
   );
 }
