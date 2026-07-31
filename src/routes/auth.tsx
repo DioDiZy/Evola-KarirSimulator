@@ -23,8 +23,12 @@ export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Masuk atau Daftar · CareerLab" },
-      { name: "description", content: "Masuk atau daftar untuk mulai simulasi karier di CareerLab Mission Engine." },
+      { title: "Masuk atau Daftar · Evola" },
+      {
+        name: "description",
+        content:
+          "Masuk atau daftar untuk mulai simulasi karier di Evola Simulasi Kerja.",
+      },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -63,7 +67,10 @@ function AuthPage() {
         if (error) throw error;
         toast.success("Akun dibuat. Mengalihkan…");
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
         if (error) throw error;
       }
       window.location.assign(nextPath);
@@ -78,7 +85,9 @@ function AuthPage() {
   async function handleGoogle() {
     setLoading(true);
     const returnUrl = new URL(nextPath, window.location.origin).toString();
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: returnUrl });
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: returnUrl,
+    });
     if (result.error) {
       toast.error(result.error.message);
       setLoading(false);
@@ -94,13 +103,14 @@ function AuthPage() {
       <main className="flex-1 grid lg:grid-cols-2">
         <section className="hidden lg:flex relative border-r border-line grid-bg items-center justify-center p-12">
           <div className="max-w-md">
-            <p className="eyebrow">CareerLab Mission Engine</p>
+            <p className="eyebrow">Evola Simulasi Kerja</p>
             <h1 className="mt-6 font-display text-5xl leading-tight">
-              Satu akun. <br /> <span className="text-accent">Semua jalur karier.</span>
+              Satu akun. <br />{" "}
+              <span className="text-accent">Semua jalur karier.</span>
             </h1>
             <p className="mt-6 text-ink-dim">
-              Progres tiap jalur profesi disimpan terpisah. Ganti bidang kapan saja — CareerLab akan mengingat
-              posisimu di setiap track.
+              Progres tiap jalur profesi disimpan terpisah. Ganti bidang kapan
+              saja — Evola akan mengingat posisimu di setiap track.
             </p>
           </div>
         </section>
@@ -121,16 +131,40 @@ function AuthPage() {
             <form onSubmit={handleSubmit} className="mt-8 space-y-4">
               {tab === "signup" && (
                 <Field label="Nama tampilan">
-                  <input value={name} onChange={(e) => setName(e.target.value)} className="input" placeholder="Nama panggilan" />
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="input"
+                    placeholder="Nama panggilan"
+                  />
                 </Field>
               )}
               <Field label="Email">
-                <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="input" placeholder="kamu@email.com" />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="input"
+                  placeholder="kamu@email.com"
+                />
               </Field>
               <Field label="Kata sandi">
-                <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className="input" placeholder="Minimal 8 karakter" />
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="input"
+                  placeholder="Minimal 8 karakter"
+                />
               </Field>
-              <button disabled={loading} type="submit" className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-accent py-2.5 text-sm font-medium text-accent-ink disabled:opacity-60">
+              <button
+                disabled={loading}
+                type="submit"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-accent py-2.5 text-sm font-medium text-accent-ink disabled:opacity-60"
+              >
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 {tab === "signin" ? "Masuk" : "Daftar"}
               </button>
@@ -151,8 +185,10 @@ function AuthPage() {
             </button>
 
             <p className="mt-8 text-center text-xs text-ink-muted">
-              Dengan lanjut, kamu setuju pada ketentuan CareerLab.{" "}
-              <Link to="/" className="underline hover:text-ink">Kembali ke beranda</Link>
+              Dengan lanjut, kamu setuju pada ketentuan Evola.{" "}
+              <Link to="/" className="underline hover:text-ink">
+                Kembali ke beranda
+              </Link>
             </p>
           </div>
         </section>
@@ -162,7 +198,13 @@ function AuthPage() {
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <label className="block">
       <span className="eyebrow">{label}</span>
