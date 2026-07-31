@@ -2,7 +2,7 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { AdaptiveDpr, Preload } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette, Noise } from "@react-three/postprocessing";
 import * as THREE from "three";
-import type { MutableRefObject } from "react";
+import { Component, type ReactNode, type MutableRefObject } from "react";
 import type { CareerTunnelField } from "@/components/dashboard/career-screen";
 import { SceneDirector } from "./scene-director";
 import { CareerFieldsRoom } from "./rooms/career-fields-room";
@@ -72,10 +72,23 @@ export function ExperienceScene({
       <Preload all />
 
       {tier !== "low" && (
-        <PostFX tier={tier} />
+        <FXBoundary>
+          <PostFX tier={tier} />
+        </FXBoundary>
       )}
     </Canvas>
   );
+}
+
+/** Jika post-processing gagal (driver software / konteks hilang), scene tetap tampil. */
+class FXBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
 }
 
 /** Post-processing hanya jika konteks WebGL sehat (menghindari crash di driver software). */
