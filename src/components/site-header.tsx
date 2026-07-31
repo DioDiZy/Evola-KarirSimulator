@@ -120,9 +120,6 @@ export function SiteHeader({ variant = "app" }: { variant?: Variant } = {}) {
               <span className="inline-flex h-48 w-48 shrink-0 items-center justify-center overflow-hidden">
                 <EvolaTulisan className="h-full w-full" />
               </span>
-              <span className="eyebrow ml-1 hidden sm:inline text-[10px]">
-                Simulasi Kerja
-              </span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-5 text-sm">
@@ -161,9 +158,6 @@ export function SiteHeader({ variant = "app" }: { variant?: Variant } = {}) {
         <Link to="/" className="flex items-center gap-2 group min-w-0">
           <span className="inline-flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden">
             <EvolaTulisan className="h-full w-full" />
-          </span>
-          <span className="eyebrow ml-1 hidden sm:inline text-[10px]">
-            Simulasi Kerja
           </span>
         </Link>
 

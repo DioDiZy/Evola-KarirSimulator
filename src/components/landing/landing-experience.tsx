@@ -12,7 +12,8 @@ function checkWebGL(): boolean {
   try {
     const c = document.createElement("canvas");
     return Boolean(
-      window.WebGLRenderingContext && (c.getContext("webgl2") || c.getContext("webgl")),
+      window.WebGLRenderingContext &&
+      (c.getContext("webgl2") || c.getContext("webgl")),
     );
   } catch {
     return false;
@@ -35,7 +36,9 @@ function prefersReducedMotion(): boolean {
  *    the rest of the page (Career Fields, Final CTA) continues normally.
  */
 export function LandingExperience() {
-  const [mode, setMode] = useState<"checking" | "webgl" | "fallback">("checking");
+  const [mode, setMode] = useState<"checking" | "webgl" | "fallback">(
+    "checking",
+  );
 
   useEffect(() => {
     if (!checkWebGL() || prefersReducedMotion()) {
@@ -65,8 +68,11 @@ export function LandingExperience() {
             <div className="flex-1 flex items-center">
               <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
                 <div className="max-w-2xl pointer-events-auto">
-                  <p className="eyebrow text-ink-muted">Career Simulation · Bahasa Indonesia</p>
-                  <h1 className="mt-6 font-display leading-[1.05] text-ink" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}>
+                  <p className="eyebrow text-ink-muted">Simulasi Kerja </p>
+                  <h1
+                    className="mt-6 font-display leading-[1.05] text-ink"
+                    style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}
+                  >
                     Rasakan dunia kerja
                     <br />
                     <span className="text-accent">sebelum benar-benar</span>
@@ -74,9 +80,9 @@ export function LandingExperience() {
                     memasukinya.
                   </h1>
                   <p className="mt-6 max-w-xl text-base sm:text-lg text-ink-dim leading-relaxed">
-                    Masuki lingkungan kerja virtual. Hadapi situasi profesional. Ambil keputusan.
-                    Kerjakan micro-task nyata. Bangun performa dan Career Credit-mu — sebelum
-                    wawancara pertama.
+                    Masuki lingkungan kerja virtual. Hadapi situasi profesional.
+                    Ambil keputusan. Kerjakan micro-task nyata. Bangun performa
+                    dan Career Credit-mu — sebelum wawancara pertama.
                   </p>
                   <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-3">
                     <Link
@@ -109,7 +115,9 @@ export function LandingExperience() {
                       key={s.v}
                       className="rounded-lg border border-line bg-surface/85 backdrop-blur-md px-3 sm:px-4 py-3"
                     >
-                      <dt className="font-display text-2xl sm:text-3xl text-primary-cyan">{s.k}</dt>
+                      <dt className="font-display text-2xl sm:text-3xl text-primary-cyan">
+                        {s.k}
+                      </dt>
                       <dd className="eyebrow mt-1 text-[10px]">{s.v}</dd>
                     </div>
                   ))}
@@ -123,7 +131,10 @@ export function LandingExperience() {
         </div>
       </section>
 
-      <section className="sr-only" aria-label="Bagaimana Mission Engine Bekerja">
+      <section
+        className="sr-only"
+        aria-label="Bagaimana Mission Engine Bekerja"
+      >
         <h2>Bukan kursus. Bukan kuis. Ini simulasi kerja.</h2>
         <ul>
           {MISSION_ENGINE_PANELS.map((p) => (
@@ -155,14 +166,16 @@ function StaticHero() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
         <div className="mx-auto max-w-7xl px-6 pt-32 pb-24">
-          <p className="eyebrow">Career Simulation · Bahasa Indonesia</p>
+          <p className="eyebrow">Simulasi Kerja</p>
           <h1 className="mt-6 font-display text-5xl sm:text-6xl lg:text-7xl leading-[1.02] max-w-4xl">
-            Rasakan dunia kerja <span className="text-accent">sebelum benar-benar</span>{" "}
+            Rasakan dunia kerja{" "}
+            <span className="text-accent">sebelum benar-benar</span>{" "}
             memasukinya.
           </h1>
           <p className="mt-6 max-w-xl text-lg text-ink-dim leading-relaxed">
-            Masuki lingkungan kerja virtual. Hadapi situasi profesional. Ambil keputusan. Kerjakan
-            micro-task nyata. Bangun performa dan Career Credit-mu — sebelum wawancara pertama.
+            Hadapi situasi kerja, ambil keputusan, dan selesaikan tugas seperti
+            seorang profesional. Bangun pengalaman dan rekam jejakmu sebelum
+            memasuki dunia kerja
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
             <Link
@@ -170,13 +183,7 @@ function StaticHero() {
               search={{ mode: "signup" }}
               className="inline-flex items-center gap-2 rounded-md bg-accent px-6 py-3 text-sm font-medium text-accent-ink"
             >
-              Mulai Mission Pertama <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              to="/auth"
-              className="inline-flex items-center gap-2 rounded-md border border-line-strong px-6 py-3 text-sm font-medium"
-            >
-              Saya sudah punya akun
+              Coba Simulasi Pertamamu <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
           <dl className="mt-14 grid grid-cols-3 gap-6 max-w-lg">
