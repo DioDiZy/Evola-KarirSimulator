@@ -1,4 +1,4 @@
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { AdaptiveDpr, Preload } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette, Noise } from "@react-three/postprocessing";
 import * as THREE from "three";
@@ -72,7 +72,19 @@ export function ExperienceScene({
       <Preload all />
 
       {tier !== "low" && (
-        <EffectComposer>
+        <PostFX tier={tier} />
+      )}
+    </Canvas>
+  );
+}
+
+/** Post-processing hanya jika konteks WebGL sehat (menghindari crash di driver software). */
+function PostFX({ tier }: { tier: QualityTier }) {
+  const gl = useThree((s) => s.gl);
+  const ok = Boolean(gl.getContext()?.getContextAttributes?.());
+  if (!ok) return null;
+  return (
+    <EffectComposer>
           <Bloom
             intensity={tier === "high" ? 0.55 : 0.32}
             luminanceThreshold={0.55}
@@ -80,9 +92,7 @@ export function ExperienceScene({
             mipmapBlur
           />
           <Vignette eskil={false} offset={0.25} darkness={0.75} />
-          <Noise opacity={tier === "high" ? 0.035 : 0.02} />
-        </EffectComposer>
-      )}
-    </Canvas>
+      <Noise opacity={tier === "high" ? 0.035 : 0.02} />
+    </EffectComposer>
   );
 }
