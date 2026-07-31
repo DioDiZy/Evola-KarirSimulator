@@ -18,12 +18,16 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as AuthenticatedMagangIndexRouteImport } from './routes/_authenticated/magang.index'
 import { Route as AuthenticatedTracksTrackSlugRouteImport } from './routes/_authenticated/tracks.$trackSlug'
 import { Route as AuthenticatedMissionsMissionIdRouteImport } from './routes/_authenticated/missions.$missionId'
+import { Route as AuthenticatedMagangTrackSlugRouteImport } from './routes/_authenticated/magang.$trackSlug'
 import { Route as AuthenticatedFieldsFieldSlugRouteImport } from './routes/_authenticated/fields.$fieldSlug'
 import { Route as AuthenticatedEpisodesEpisodeIdRouteImport } from './routes/_authenticated/episodes.$episodeId'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as AuthenticatedMagangMisiMissionSlugRouteImport } from './routes/_authenticated/magang.misi.$missionSlug'
+import { Route as AuthenticatedMagangHasilMissionSlugRouteImport } from './routes/_authenticated/magang.hasil.$missionSlug'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -71,6 +75,12 @@ const Char91DotmcpChar93ListToolsRoute =
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedMagangIndexRoute =
+  AuthenticatedMagangIndexRouteImport.update({
+    id: '/magang/',
+    path: '/magang/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedTracksTrackSlugRoute =
   AuthenticatedTracksTrackSlugRouteImport.update({
     id: '/tracks/$trackSlug',
@@ -81,6 +91,12 @@ const AuthenticatedMissionsMissionIdRoute =
   AuthenticatedMissionsMissionIdRouteImport.update({
     id: '/missions/$missionId',
     path: '/missions/$missionId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMagangTrackSlugRoute =
+  AuthenticatedMagangTrackSlugRouteImport.update({
+    id: '/magang/$trackSlug',
+    path: '/magang/$trackSlug',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedFieldsFieldSlugRoute =
@@ -106,6 +122,18 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedMagangMisiMissionSlugRoute =
+  AuthenticatedMagangMisiMissionSlugRouteImport.update({
+    id: '/magang/misi/$missionSlug',
+    path: '/magang/misi/$missionSlug',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMagangHasilMissionSlugRoute =
+  AuthenticatedMagangHasilMissionSlugRouteImport.update({
+    id: '/magang/hasil/$missionSlug',
+    path: '/magang/hasil/$missionSlug',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -120,8 +148,12 @@ export interface FileRoutesByFullPath {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/episodes/$episodeId': typeof AuthenticatedEpisodesEpisodeIdRoute
   '/fields/$fieldSlug': typeof AuthenticatedFieldsFieldSlugRoute
+  '/magang/$trackSlug': typeof AuthenticatedMagangTrackSlugRoute
   '/missions/$missionId': typeof AuthenticatedMissionsMissionIdRoute
   '/tracks/$trackSlug': typeof AuthenticatedTracksTrackSlugRoute
+  '/magang/': typeof AuthenticatedMagangIndexRoute
+  '/magang/hasil/$missionSlug': typeof AuthenticatedMagangHasilMissionSlugRoute
+  '/magang/misi/$missionSlug': typeof AuthenticatedMagangMisiMissionSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -136,8 +168,12 @@ export interface FileRoutesByTo {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/episodes/$episodeId': typeof AuthenticatedEpisodesEpisodeIdRoute
   '/fields/$fieldSlug': typeof AuthenticatedFieldsFieldSlugRoute
+  '/magang/$trackSlug': typeof AuthenticatedMagangTrackSlugRoute
   '/missions/$missionId': typeof AuthenticatedMissionsMissionIdRoute
   '/tracks/$trackSlug': typeof AuthenticatedTracksTrackSlugRoute
+  '/magang': typeof AuthenticatedMagangIndexRoute
+  '/magang/hasil/$missionSlug': typeof AuthenticatedMagangHasilMissionSlugRoute
+  '/magang/misi/$missionSlug': typeof AuthenticatedMagangMisiMissionSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -154,8 +190,12 @@ export interface FileRoutesById {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/episodes/$episodeId': typeof AuthenticatedEpisodesEpisodeIdRoute
   '/_authenticated/fields/$fieldSlug': typeof AuthenticatedFieldsFieldSlugRoute
+  '/_authenticated/magang/$trackSlug': typeof AuthenticatedMagangTrackSlugRoute
   '/_authenticated/missions/$missionId': typeof AuthenticatedMissionsMissionIdRoute
   '/_authenticated/tracks/$trackSlug': typeof AuthenticatedTracksTrackSlugRoute
+  '/_authenticated/magang/': typeof AuthenticatedMagangIndexRoute
+  '/_authenticated/magang/hasil/$missionSlug': typeof AuthenticatedMagangHasilMissionSlugRoute
+  '/_authenticated/magang/misi/$missionSlug': typeof AuthenticatedMagangMisiMissionSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -172,8 +212,12 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/episodes/$episodeId'
     | '/fields/$fieldSlug'
+    | '/magang/$trackSlug'
     | '/missions/$missionId'
     | '/tracks/$trackSlug'
+    | '/magang/'
+    | '/magang/hasil/$missionSlug'
+    | '/magang/misi/$missionSlug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -188,8 +232,12 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/episodes/$episodeId'
     | '/fields/$fieldSlug'
+    | '/magang/$trackSlug'
     | '/missions/$missionId'
     | '/tracks/$trackSlug'
+    | '/magang'
+    | '/magang/hasil/$missionSlug'
+    | '/magang/misi/$missionSlug'
   id:
     | '__root__'
     | '/'
@@ -205,8 +253,12 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/episodes/$episodeId'
     | '/_authenticated/fields/$fieldSlug'
+    | '/_authenticated/magang/$trackSlug'
     | '/_authenticated/missions/$missionId'
     | '/_authenticated/tracks/$trackSlug'
+    | '/_authenticated/magang/'
+    | '/_authenticated/magang/hasil/$missionSlug'
+    | '/_authenticated/magang/misi/$missionSlug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -286,6 +338,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/magang/': {
+      id: '/_authenticated/magang/'
+      path: '/magang'
+      fullPath: '/magang/'
+      preLoaderRoute: typeof AuthenticatedMagangIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/tracks/$trackSlug': {
       id: '/_authenticated/tracks/$trackSlug'
       path: '/tracks/$trackSlug'
@@ -298,6 +357,13 @@ declare module '@tanstack/react-router' {
       path: '/missions/$missionId'
       fullPath: '/missions/$missionId'
       preLoaderRoute: typeof AuthenticatedMissionsMissionIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/magang/$trackSlug': {
+      id: '/_authenticated/magang/$trackSlug'
+      path: '/magang/$trackSlug'
+      fullPath: '/magang/$trackSlug'
+      preLoaderRoute: typeof AuthenticatedMagangTrackSlugRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/fields/$fieldSlug': {
@@ -328,6 +394,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/magang/misi/$missionSlug': {
+      id: '/_authenticated/magang/misi/$missionSlug'
+      path: '/magang/misi/$missionSlug'
+      fullPath: '/magang/misi/$missionSlug'
+      preLoaderRoute: typeof AuthenticatedMagangMisiMissionSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/magang/hasil/$missionSlug': {
+      id: '/_authenticated/magang/hasil/$missionSlug'
+      path: '/magang/hasil/$missionSlug'
+      fullPath: '/magang/hasil/$missionSlug'
+      preLoaderRoute: typeof AuthenticatedMagangHasilMissionSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -336,8 +416,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedEpisodesEpisodeIdRoute: typeof AuthenticatedEpisodesEpisodeIdRoute
   AuthenticatedFieldsFieldSlugRoute: typeof AuthenticatedFieldsFieldSlugRoute
+  AuthenticatedMagangTrackSlugRoute: typeof AuthenticatedMagangTrackSlugRoute
   AuthenticatedMissionsMissionIdRoute: typeof AuthenticatedMissionsMissionIdRoute
   AuthenticatedTracksTrackSlugRoute: typeof AuthenticatedTracksTrackSlugRoute
+  AuthenticatedMagangIndexRoute: typeof AuthenticatedMagangIndexRoute
+  AuthenticatedMagangHasilMissionSlugRoute: typeof AuthenticatedMagangHasilMissionSlugRoute
+  AuthenticatedMagangMisiMissionSlugRoute: typeof AuthenticatedMagangMisiMissionSlugRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -345,8 +429,14 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedEpisodesEpisodeIdRoute: AuthenticatedEpisodesEpisodeIdRoute,
   AuthenticatedFieldsFieldSlugRoute: AuthenticatedFieldsFieldSlugRoute,
+  AuthenticatedMagangTrackSlugRoute: AuthenticatedMagangTrackSlugRoute,
   AuthenticatedMissionsMissionIdRoute: AuthenticatedMissionsMissionIdRoute,
   AuthenticatedTracksTrackSlugRoute: AuthenticatedTracksTrackSlugRoute,
+  AuthenticatedMagangIndexRoute: AuthenticatedMagangIndexRoute,
+  AuthenticatedMagangHasilMissionSlugRoute:
+    AuthenticatedMagangHasilMissionSlugRoute,
+  AuthenticatedMagangMisiMissionSlugRoute:
+    AuthenticatedMagangMisiMissionSlugRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
