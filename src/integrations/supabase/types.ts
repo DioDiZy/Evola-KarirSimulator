@@ -158,6 +158,161 @@ export type Database = {
         }
         Relationships: []
       }
+      intern_answer_options: {
+        Row: {
+          feedback: string
+          id: string
+          is_correct: boolean
+          label: string
+          order_index: number
+          question_id: string
+        }
+        Insert: {
+          feedback?: string
+          id?: string
+          is_correct?: boolean
+          label: string
+          order_index?: number
+          question_id: string
+        }
+        Update: {
+          feedback?: string
+          id?: string
+          is_correct?: boolean
+          label?: string
+          order_index?: number
+          question_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intern_answer_options_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "intern_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      intern_jobs: {
+        Row: {
+          description: string
+          id: string
+          mission_id: string
+          order_index: number
+          title: string
+        }
+        Insert: {
+          description?: string
+          id?: string
+          mission_id: string
+          order_index?: number
+          title: string
+        }
+        Update: {
+          description?: string
+          id?: string
+          mission_id?: string
+          order_index?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intern_jobs_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "intern_missions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      intern_missions: {
+        Row: {
+          created_at: string
+          description: string
+          difficulty: string
+          id: string
+          order_index: number
+          reward_credit: number
+          senior_name: string
+          senior_title: string
+          slug: string
+          target_role: string
+          title: string
+          track_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          difficulty?: string
+          id?: string
+          order_index?: number
+          reward_credit?: number
+          senior_name?: string
+          senior_title?: string
+          slug: string
+          target_role?: string
+          title: string
+          track_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          difficulty?: string
+          id?: string
+          order_index?: number
+          reward_credit?: number
+          senior_name?: string
+          senior_title?: string
+          slug?: string
+          target_role?: string
+          title?: string
+          track_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intern_missions_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "career_tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      intern_questions: {
+        Row: {
+          explanation: string
+          id: string
+          job_id: string
+          order_index: number
+          question_text: string
+          senior_message: string
+        }
+        Insert: {
+          explanation?: string
+          id?: string
+          job_id: string
+          order_index?: number
+          question_text: string
+          senior_message: string
+        }
+        Update: {
+          explanation?: string
+          id?: string
+          job_id?: string
+          order_index?: number
+          question_text?: string
+          senior_message?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intern_questions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "intern_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       missions: {
         Row: {
           content: Json
@@ -205,6 +360,7 @@ export type Database = {
           created_at: string
           display_name: string
           id: string
+          role: string
           updated_at: string
         }
         Insert: {
@@ -212,6 +368,7 @@ export type Database = {
           created_at?: string
           display_name?: string
           id: string
+          role?: string
           updated_at?: string
         }
         Update: {
@@ -219,6 +376,7 @@ export type Database = {
           created_at?: string
           display_name?: string
           id?: string
+          role?: string
           updated_at?: string
         }
         Relationships: []
@@ -251,6 +409,101 @@ export type Database = {
             columns: ["episode_id"]
             isOneToOne: false
             referencedRelation: "episodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_intern_answers: {
+        Row: {
+          answered_at: string
+          id: string
+          is_correct: boolean
+          question_id: string
+          selected_option_id: string
+          user_id: string
+        }
+        Insert: {
+          answered_at?: string
+          id?: string
+          is_correct: boolean
+          question_id: string
+          selected_option_id: string
+          user_id: string
+        }
+        Update: {
+          answered_at?: string
+          id?: string
+          is_correct?: boolean
+          question_id?: string
+          selected_option_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_intern_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "intern_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_intern_answers_selected_option_id_fkey"
+            columns: ["selected_option_id"]
+            isOneToOne: false
+            referencedRelation: "intern_answer_options"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_intern_progress: {
+        Row: {
+          completed_at: string | null
+          correct_answers: number
+          created_at: string
+          credit_awarded: number
+          current_job_index: number
+          current_question_index: number
+          id: string
+          incorrect_answers: number
+          mission_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          correct_answers?: number
+          created_at?: string
+          credit_awarded?: number
+          current_job_index?: number
+          current_question_index?: number
+          id?: string
+          incorrect_answers?: number
+          mission_id: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          correct_answers?: number
+          created_at?: string
+          credit_awarded?: number
+          current_job_index?: number
+          current_question_index?: number
+          id?: string
+          incorrect_answers?: number
+          mission_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_intern_progress_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "intern_missions"
             referencedColumns: ["id"]
           },
         ]
