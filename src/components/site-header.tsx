@@ -112,7 +112,9 @@ export function SiteHeader({
         {open && (
           <div
             id="landing-mobile-menu"
-            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[min(94%,24rem)] rounded-2xl border border-line bg-surface/95 backdrop-blur-xl p-5 shadow-2xl md:hidden"
+            className={`fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[min(94%,24rem)] rounded-2xl border p-5 shadow-2xl md:hidden backdrop-blur-xl ${
+              tone === "dark" ? "exp-nav" : "border-line bg-surface/95"
+            }`}
           >
             <nav className="flex flex-col gap-4 text-base">
               <NavLinks onNavigate={() => setOpen(false)} />
