@@ -297,3 +297,25 @@
   width: 100%;
   height: 100%;
 }
+/* Dark navbar during immersive experience */
+.exp-nav {
+  border-color: color-mix(in oklab, var(--exp-ink) 12%, transparent);
+  background: color-mix(in oklab, var(--exp-surface) 62%, transparent);
+  backdrop-filter: blur(14px);
+}
+.exp-nav-scrolled {
+  background: color-mix(in oklab, var(--exp-surface) 88%, transparent);
+  box-shadow: 0 10px 40px -18px rgba(0, 0, 0, 0.8);
+}
+.exp-nav a,
+.exp-nav button {
+  color: var(--exp-ink-dim);
+  border-color: color-mix(in oklab, var(--exp-ink) 16%, transparent);
+}
+.exp-nav a:hover,
+.exp-nav button:hover { color: var(--exp-cyan); }
+.exp-nav .font-display { color: var(--exp-ink); }
+.exp-nav a[href*="mode=signup"] {
+  color: #030712;
+  background: var(--exp-cyan);
+}
