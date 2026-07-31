@@ -65,7 +65,13 @@ export function cutOpacity(global: number): number {
 /** Fade-in/out util untuk overlay chapter. */
 export function chapterOpacity(global: number, chapter: Chapter): number {
   const fade = 0.035;
-  const inA = THREE.MathUtils.smoothstep(global, chapter.start - fade, chapter.start + fade);
-  const outA = 1 - THREE.MathUtils.smoothstep(global, chapter.end - fade, chapter.end + fade);
+  const inA =
+    chapter.start <= 0
+      ? 1
+      : THREE.MathUtils.smoothstep(global, chapter.start - fade, chapter.start + fade);
+  const outA =
+    chapter.end >= 1
+      ? 1
+      : 1 - THREE.MathUtils.smoothstep(global, chapter.end - fade, chapter.end + fade);
   return THREE.MathUtils.clamp(Math.min(inA, outA), 0, 1);
 }
