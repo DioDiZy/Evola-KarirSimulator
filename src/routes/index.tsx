@@ -4,7 +4,10 @@ import { ArrowRight } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { listFields } from "@/lib/careerlab.functions";
 import { LandingExperience } from "@/components/landing/landing-experience";
-import { CareerTunnel, type CareerTunnelField } from "@/components/dashboard/career-tunnel";
+import {
+  CareerTunnel,
+  type CareerTunnelField,
+} from "@/components/dashboard/career-tunnel";
 
 const FIELD_MEDIA: Record<string, string> = {
   "ui-ux-designer": "/images/career/ui-ux-designer.webp",
@@ -21,13 +24,13 @@ const fieldsQO = queryOptions({
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CareerLab · Rasakan dunia kerja sebelum benar-benar memasukinya" },
+      { title: "Evola · Rasakan dunia kerja sebelum benar-benar memasukinya" },
       {
         name: "description",
         content:
           "Mission Engine untuk simulasi karier: keputusan profesional, micro-task nyata, evaluasi berbasis performa.",
       },
-      { property: "og:title", content: "CareerLab · Mission Engine" },
+      { property: "og:title", content: "Evola · Mission Engine" },
       {
         property: "og:description",
         content:
@@ -69,7 +72,8 @@ function LandingPage() {
                 </h2>
               </div>
               <p className="max-w-md text-ink-dim">
-                MVP fokus pada Teknologi Informasi. Bidang lain sedang disiapkan.
+                MVP fokus pada Teknologi Informasi. Bidang lain sedang
+                disiapkan.
               </p>
             </div>
             <div className="mt-10">
@@ -98,7 +102,9 @@ function LandingPage() {
 
         <footer className="border-t border-line mt-0">
           <div className="mx-auto max-w-7xl px-6 py-10 flex flex-wrap items-center justify-between gap-4 text-sm text-ink-muted">
-            <p className="font-mono-cl">CareerLab · CITECH 2026 · Universitas Jember</p>
+            <p className="font-mono-cl">
+              CareerLab · CITECH 2026 · Universitas Jember
+            </p>
             <p className="eyebrow">Mission Engine v1</p>
           </div>
         </footer>
