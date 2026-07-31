@@ -4,9 +4,27 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Flame, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import "/public/evola.png";
 
 type Variant = "landing" | "app";
-
+function EvolaLogo({ className = "" }: { className?: string }) {
+  return (
+    <img
+      src="/evola.png"
+      alt="Logo Evola"
+      className={`block object-contain ${className}`}
+    />
+  );
+}
+function EvolaTulisan({ className = "" }: { className?: string }) {
+  return (
+    <img
+      src="/evolatulisana.png"
+      alt="Logo Evola"
+      className={`block object-contain ${className}`}
+    />
+  );
+}
 export function SiteHeader({ variant = "app" }: { variant?: Variant } = {}) {
   const { user } = useSession();
   const navigate = useNavigate();
@@ -36,13 +54,25 @@ export function SiteHeader({ variant = "app" }: { variant?: Variant } = {}) {
     <>
       {user ? (
         <>
-          <Link to="/dashboard" onClick={onNavigate} className="text-ink-dim hover:text-primary-cyan transition-colors min-h-11 inline-flex items-center">
+          <Link
+            to="/dashboard"
+            onClick={onNavigate}
+            className="text-ink-dim hover:text-primary-cyan transition-colors min-h-11 inline-flex items-center"
+          >
             Dashboard
           </Link>
-          <Link to="/magang" onClick={onNavigate} className="text-ink-dim hover:text-primary-cyan transition-colors min-h-11 inline-flex items-center">
+          <Link
+            to="/magang"
+            onClick={onNavigate}
+            className="text-ink-dim hover:text-primary-cyan transition-colors min-h-11 inline-flex items-center"
+          >
             Magang
           </Link>
-          <Link to="/profile" onClick={onNavigate} className="text-ink-dim hover:text-primary-cyan transition-colors min-h-11 inline-flex items-center">
+          <Link
+            to="/profile"
+            onClick={onNavigate}
+            className="text-ink-dim hover:text-primary-cyan transition-colors min-h-11 inline-flex items-center"
+          >
             Profil
           </Link>
           <button
@@ -54,7 +84,11 @@ export function SiteHeader({ variant = "app" }: { variant?: Variant } = {}) {
         </>
       ) : (
         <>
-          <Link to="/auth" onClick={onNavigate} className="text-ink-dim hover:text-primary-cyan transition-colors min-h-11 inline-flex items-center">
+          <Link
+            to="/auth"
+            onClick={onNavigate}
+            className="text-ink-dim hover:text-primary-cyan transition-colors min-h-11 inline-flex items-center"
+          >
             Masuk
           </Link>
           <Link
@@ -83,11 +117,12 @@ export function SiteHeader({ variant = "app" }: { variant?: Variant } = {}) {
         >
           <div className="flex items-center justify-between px-5 h-14">
             <Link to="/" className="flex items-center gap-2">
-              <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-primary-cyan/12 text-primary-cyan border border-primary-cyan/30">
-                <Flame className="h-3.5 w-3.5" />
+              <span className="inline-flex h-48 w-48 shrink-0 items-center justify-center overflow-hidden">
+                <EvolaTulisan className="h-full w-full" />
               </span>
-              <span className="font-display text-base text-ink">CareerLab</span>
-              <span className="eyebrow ml-1 hidden sm:inline text-[10px]">Mission Engine</span>
+              <span className="eyebrow ml-1 hidden sm:inline text-[10px]">
+                Simulasi Kerja
+              </span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-5 text-sm">
@@ -124,11 +159,12 @@ export function SiteHeader({ variant = "app" }: { variant?: Variant } = {}) {
     <header className="sticky top-0 z-40 border-b border-line/70 backdrop-blur-md bg-surface/80">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
         <Link to="/" className="flex items-center gap-2 group min-w-0">
-          <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary-cyan/12 text-primary-cyan border border-primary-cyan/30">
-            <Flame className="h-4 w-4" />
+          <span className="inline-flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden">
+            <EvolaTulisan className="h-full w-full" />
           </span>
-          <span className="font-display text-xl truncate">CareerLab</span>
-          <span className="eyebrow ml-2 hidden sm:inline">Mission Engine</span>
+          <span className="eyebrow ml-1 hidden sm:inline text-[10px]">
+            Simulasi Kerja
+          </span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-6 text-sm">
