@@ -1224,7 +1224,7 @@ export function CareerTunnel({
                   </Link>
                 ) : (
                   <span>
-                    {field.name} (segera hadir)
+                    {field.name} (segere hadir)
                   </span>
                 )}
               </li>
