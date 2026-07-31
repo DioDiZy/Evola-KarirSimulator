@@ -1,6 +1,14 @@
 import { RoundedBox } from "@react-three/drei";
-import { ThreeEvent, useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  type ThreeEvent,
+  useFrame,
+} from "@react-three/fiber";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import * as THREE from "three";
 
 export type CareerTunnelField = {
@@ -22,60 +30,212 @@ type Props = {
   onActivate: (slug: string) => void;
 };
 
+/**
+ * Membuat background fallback saat bidang
+ * belum memiliki gambar.
+ */
 function drawAbstract(
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
   accent: string,
 ) {
-  const backgroundGradient = ctx.createLinearGradient(
+  const backgroundGradient =
+    ctx.createLinearGradient(
+      0,
+      0,
+      width,
+      height,
+    );
+
+  backgroundGradient.addColorStop(
     0,
-    0,
-    width,
-    height,
+    "#030712",
   );
 
-  backgroundGradient.addColorStop(0, "#EEF2F7");
-  backgroundGradient.addColorStop(1, "#F8FAFC");
+  backgroundGradient.addColorStop(
+    0.5,
+    "#07111F",
+  );
+
+  backgroundGradient.addColorStop(
+    1,
+    "#0F172A",
+  );
 
   ctx.fillStyle = backgroundGradient;
   ctx.fillRect(0, 0, width, height);
 
+  /**
+   * Grid futuristik.
+   */
   ctx.save();
 
   ctx.strokeStyle = accent;
-  ctx.globalAlpha = 0.3;
+  ctx.globalAlpha = 0.1;
   ctx.lineWidth = 1;
 
-  for (let index = 0; index < 30; index += 1) {
+  const gridSize = 48;
+
+  for (
+    let x = 0;
+    x <= width;
+    x += gridSize
+  ) {
     ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, height);
+    ctx.stroke();
+  }
 
-    const y = (index / 30) * height;
-
+  for (
+    let y = 0;
+    y <= height;
+    y += gridSize
+  ) {
+    ctx.beginPath();
     ctx.moveTo(0, y);
-    ctx.lineTo(width, y + Math.sin(index) * 8);
+    ctx.lineTo(width, y);
     ctx.stroke();
   }
 
   ctx.restore();
 
-  const radialGlow = ctx.createRadialGradient(
-    width * 0.7,
-    height * 0.35,
-    20,
-    width * 0.7,
-    height * 0.35,
-    width * 0.5,
+  /**
+   * Garis gelombang horizontal.
+   */
+  ctx.save();
+
+  ctx.strokeStyle = accent;
+  ctx.globalAlpha = 0.22;
+  ctx.lineWidth = 1;
+
+  for (
+    let lineIndex = 0;
+    lineIndex < 24;
+    lineIndex += 1
+  ) {
+    ctx.beginPath();
+
+    const baseY =
+      (lineIndex / 24) * height;
+
+    for (
+      let x = 0;
+      x <= width;
+      x += 16
+    ) {
+      const wave =
+        Math.sin(
+          x * 0.012 +
+            lineIndex * 0.8,
+        ) * 7;
+
+      if (x === 0) {
+        ctx.moveTo(
+          x,
+          baseY + wave,
+        );
+      } else {
+        ctx.lineTo(
+          x,
+          baseY + wave,
+        );
+      }
+    }
+
+    ctx.stroke();
+  }
+
+  ctx.restore();
+
+  /**
+   * Cahaya aksen utama.
+   */
+  const radialGlow =
+    ctx.createRadialGradient(
+      width * 0.72,
+      height * 0.3,
+      10,
+      width * 0.72,
+      height * 0.3,
+      width * 0.52,
+    );
+
+  radialGlow.addColorStop(
+    0,
+    `${accent}CC`,
   );
 
-  radialGlow.addColorStop(0, accent);
-  radialGlow.addColorStop(1, "rgba(0,0,0,0)");
+  radialGlow.addColorStop(
+    0.3,
+    `${accent}55`,
+  );
+
+  radialGlow.addColorStop(
+    1,
+    "rgba(0,0,0,0)",
+  );
 
   ctx.save();
-  ctx.globalAlpha = 0.35;
+
+  ctx.globalAlpha = 0.32;
   ctx.fillStyle = radialGlow;
   ctx.fillRect(0, 0, width, height);
+
   ctx.restore();
+
+  /**
+   * Cahaya aksen kedua.
+   */
+  const secondaryGlow =
+    ctx.createRadialGradient(
+      width * 0.18,
+      height * 0.8,
+      0,
+      width * 0.18,
+      height * 0.8,
+      width * 0.35,
+    );
+
+  secondaryGlow.addColorStop(
+    0,
+    `${accent}44`,
+  );
+
+  secondaryGlow.addColorStop(
+    1,
+    "rgba(0,0,0,0)",
+  );
+
+  ctx.fillStyle = secondaryGlow;
+  ctx.fillRect(0, 0, width, height);
+
+  /**
+   * Vignette.
+   */
+  const vignette =
+    ctx.createRadialGradient(
+      width / 2,
+      height / 2,
+      width * 0.15,
+      width / 2,
+      height / 2,
+      width * 0.75,
+    );
+
+  vignette.addColorStop(
+    0,
+    "rgba(0,0,0,0)",
+  );
+
+  vignette.addColorStop(
+    1,
+    "rgba(0,0,0,0.68)",
+  );
+
+  ctx.fillStyle = vignette;
+  ctx.fillRect(0, 0, width, height);
 }
 
 function drawImageCover(
@@ -84,8 +244,11 @@ function drawImageCover(
   canvasWidth: number,
   canvasHeight: number,
 ) {
-  const imageRatio = image.width / image.height;
-  const canvasRatio = canvasWidth / canvasHeight;
+  const imageRatio =
+    image.width / image.height;
+
+  const canvasRatio =
+    canvasWidth / canvasHeight;
 
   let sourceX = 0;
   let sourceY = 0;
@@ -93,11 +256,19 @@ function drawImageCover(
   let sourceHeight = image.height;
 
   if (imageRatio > canvasRatio) {
-    sourceWidth = image.height * canvasRatio;
-    sourceX = (image.width - sourceWidth) / 2;
+    sourceWidth =
+      image.height * canvasRatio;
+
+    sourceX =
+      (image.width - sourceWidth) /
+      2;
   } else {
-    sourceHeight = image.width / canvasRatio;
-    sourceY = (image.height - sourceHeight) / 2;
+    sourceHeight =
+      image.width / canvasRatio;
+
+    sourceY =
+      (image.height - sourceHeight) /
+      2;
   }
 
   ctx.drawImage(
@@ -113,46 +284,119 @@ function drawImageCover(
   );
 }
 
+/**
+ * Memberikan efek dark cinematic pada gambar.
+ */
 function drawImageEffects(
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
   accent: string,
 ) {
-  const darkGradient = ctx.createLinearGradient(0, 0, width, height);
+  const darkGradient =
+    ctx.createLinearGradient(
+      0,
+      0,
+      width,
+      height,
+    );
 
-  darkGradient.addColorStop(0, "rgba(2, 6, 12, 0.18)");
-  darkGradient.addColorStop(0.5, "rgba(2, 6, 12, 0.08)");
-  darkGradient.addColorStop(1, "rgba(2, 6, 12, 0.45)");
+  darkGradient.addColorStop(
+    0,
+    "rgba(2,6,23,0.42)",
+  );
+
+  darkGradient.addColorStop(
+    0.45,
+    "rgba(2,6,23,0.16)",
+  );
+
+  darkGradient.addColorStop(
+    1,
+    "rgba(2,6,23,0.72)",
+  );
 
   ctx.fillStyle = darkGradient;
   ctx.fillRect(0, 0, width, height);
 
-  const accentGlow = ctx.createRadialGradient(
-    width * 0.76,
-    height * 0.3,
-    10,
-    width * 0.76,
-    height * 0.3,
-    width * 0.62,
+  /**
+   * Tint biru gelap.
+   */
+  ctx.save();
+
+  ctx.globalCompositeOperation =
+    "multiply";
+
+  ctx.fillStyle =
+    "rgba(7,17,31,0.42)";
+
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.restore();
+
+  const accentGlow =
+    ctx.createRadialGradient(
+      width * 0.76,
+      height * 0.28,
+      10,
+      width * 0.76,
+      height * 0.28,
+      width * 0.62,
+    );
+
+  accentGlow.addColorStop(
+    0,
+    `${accent}CC`,
   );
 
-  accentGlow.addColorStop(0, accent);
-  accentGlow.addColorStop(0.4, `${accent}55`);
-  accentGlow.addColorStop(1, "rgba(0,0,0,0)");
+  accentGlow.addColorStop(
+    0.4,
+    `${accent}44`,
+  );
+
+  accentGlow.addColorStop(
+    1,
+    "rgba(0,0,0,0)",
+  );
 
   ctx.save();
+
   ctx.globalAlpha = 0.28;
   ctx.fillStyle = accentGlow;
   ctx.fillRect(0, 0, width, height);
+
   ctx.restore();
 
-  const sideShade = ctx.createLinearGradient(0, 0, width, 0);
+  /**
+   * Bayangan sisi.
+   */
+  const sideShade =
+    ctx.createLinearGradient(
+      0,
+      0,
+      width,
+      0,
+    );
 
-  sideShade.addColorStop(0, "rgba(0,0,0,0.38)");
-  sideShade.addColorStop(0.35, "rgba(0,0,0,0)");
-  sideShade.addColorStop(0.75, "rgba(0,0,0,0)");
-  sideShade.addColorStop(1, "rgba(0,0,0,0.32)");
+  sideShade.addColorStop(
+    0,
+    "rgba(0,0,0,0.62)",
+  );
+
+  sideShade.addColorStop(
+    0.3,
+    "rgba(0,0,0,0.06)",
+  );
+
+  sideShade.addColorStop(
+    0.7,
+    "rgba(0,0,0,0.06)",
+  );
+
+  sideShade.addColorStop(
+    1,
+    "rgba(0,0,0,0.55)",
+  );
 
   ctx.fillStyle = sideShade;
   ctx.fillRect(0, 0, width, height);
@@ -167,97 +411,375 @@ function drawOverlay(
   total: number,
   accent: string,
 ) {
-  const active = field.status === "active";
+  const active =
+    field.status === "active";
 
-  const bottomOverlay = ctx.createLinearGradient(0, 0, 0, height);
+  /**
+   * Overlay gelap untuk keterbacaan teks.
+   */
+  const bottomOverlay =
+    ctx.createLinearGradient(
+      0,
+      0,
+      0,
+      height,
+    );
 
-  bottomOverlay.addColorStop(0, "rgba(2,6,12,0.05)");
-  bottomOverlay.addColorStop(0.5, "rgba(2,6,12,0.18)");
-  bottomOverlay.addColorStop(0.7, "rgba(2,6,12,0.72)");
-  bottomOverlay.addColorStop(1, "rgba(2,6,12,0.98)");
+  bottomOverlay.addColorStop(
+    0,
+    "rgba(2,6,23,0.14)",
+  );
+
+  bottomOverlay.addColorStop(
+    0.42,
+    "rgba(2,6,23,0.18)",
+  );
+
+  bottomOverlay.addColorStop(
+    0.66,
+    "rgba(2,6,23,0.72)",
+  );
+
+  bottomOverlay.addColorStop(
+    1,
+    "rgba(2,6,23,0.98)",
+  );
 
   ctx.fillStyle = bottomOverlay;
   ctx.fillRect(0, 0, width, height);
 
+  /**
+   * Border bagian dalam.
+   */
   ctx.save();
-  ctx.strokeStyle = accent;
-  ctx.globalAlpha = active ? 0.72 : 0.35;
-  ctx.lineWidth = 3;
-  ctx.strokeRect(12, 12, width - 24, height - 24);
+
+  ctx.strokeStyle = active
+    ? accent
+    : "#475569";
+
+  ctx.globalAlpha = active
+    ? 0.72
+    : 0.3;
+
+  ctx.lineWidth = 2;
+
+  ctx.strokeRect(
+    14,
+    14,
+    width - 28,
+    height - 28,
+  );
+
   ctx.restore();
 
+  /**
+   * Garis aksen pada bagian atas.
+   */
+  const topAccentGradient =
+    ctx.createLinearGradient(
+      40,
+      0,
+      250,
+      0,
+    );
+
+  topAccentGradient.addColorStop(
+    0,
+    active ? accent : "#64748B",
+  );
+
+  topAccentGradient.addColorStop(
+    1,
+    "rgba(0,0,0,0)",
+  );
+
+  ctx.fillStyle =
+    topAccentGradient;
+
+  ctx.fillRect(
+    40,
+    82,
+    210,
+    3,
+  );
+
+  /**
+   * Label status.
+   */
   ctx.save();
-  ctx.fillStyle = active ? accent : "#64748B";
-  ctx.font = "600 22px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillText(active ? "CAREER FIELD" : "COMING SOON", 40, 60);
+
+  ctx.fillStyle = active
+    ? accent
+    : "#64748B";
+
+  ctx.shadowColor = active
+    ? accent
+    : "transparent";
+
+  ctx.shadowBlur = active
+    ? 12
+    : 0;
+
+  ctx.font =
+    '600 20px "Poppins", ui-sans-serif, system-ui, sans-serif';
+
+  ctx.fillText(
+    active
+      ? "CAREER FIELD"
+      : "COMING SOON",
+    40,
+    58,
+  );
+
   ctx.restore();
 
-  const currentIndex = String(index + 1).padStart(2, "0");
-  const totalFields = String(total).padStart(2, "0");
-  const indexLabel = `${currentIndex} / ${totalFields}`;
+  /**
+   * Index bidang.
+   */
+  const currentIndex = String(
+    index + 1,
+  ).padStart(2, "0");
+
+  const totalFields = String(
+    total,
+  ).padStart(2, "0");
+
+  const indexLabel =
+    `${currentIndex} / ${totalFields}`;
 
   ctx.save();
-  ctx.fillStyle = "rgba(255,255,255,0.78)";
-  ctx.font = "500 20px ui-monospace, SFMono-Regular, monospace";
+
+  ctx.fillStyle =
+    "rgba(203,213,225,0.82)";
+
+  ctx.font =
+    '500 19px "JetBrains Mono", ui-monospace, monospace';
+
   ctx.fillText(
     indexLabel,
-    width - 40 - ctx.measureText(indexLabel).width,
-    60,
+    width -
+      40 -
+      ctx.measureText(indexLabel)
+        .width,
+    58,
   );
+
   ctx.restore();
 
-  const fieldName = field.name.toUpperCase();
-
+  /**
+   * Nomor dekoratif besar.
+   */
   ctx.save();
-  ctx.fillStyle = "#0F172A";
-  ctx.shadowColor = "rgba(0,0,0,0.75)";
-  ctx.shadowBlur = 16;
-  ctx.font = "800 64px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillText(fieldName, 40, height - 140);
+
+  ctx.fillStyle = active
+    ? `${accent}18`
+    : "rgba(100,116,139,0.08)";
+
+  ctx.font =
+    '700 180px "Poppins", ui-sans-serif, system-ui, sans-serif';
+
+  const decorativeNumber =
+    String(index + 1).padStart(
+      2,
+      "0",
+    );
+
+  const decorativeWidth =
+    ctx.measureText(
+      decorativeNumber,
+    ).width;
+
+  ctx.fillText(
+    decorativeNumber,
+    width -
+      decorativeWidth -
+      35,
+    height - 75,
+  );
+
   ctx.restore();
 
-  ctx.save();
-  ctx.fillStyle = "rgba(226,232,240,0.88)";
-  ctx.font = "400 24px ui-sans-serif, system-ui, sans-serif";
+  /**
+   * Nama bidang.
+   */
+  const fieldName =
+    field.name.toUpperCase();
 
-  const maximumTaglineWidth = width - 80;
-  let tagline = field.tagline || "";
+  ctx.save();
+
+  ctx.fillStyle = active
+    ? "#F8FAFC"
+    : "#94A3B8";
+
+  ctx.shadowColor =
+    "rgba(0,0,0,0.9)";
+
+  ctx.shadowBlur = 18;
+
+  ctx.font =
+    '700 58px "Poppins", ui-sans-serif, system-ui, sans-serif';
+
+  ctx.fillText(
+    fieldName,
+    40,
+    height - 142,
+  );
+
+  ctx.restore();
+
+  /**
+   * Tagline.
+   */
+  ctx.save();
+
+  ctx.fillStyle = active
+    ? "rgba(203,213,225,0.9)"
+    : "rgba(148,163,184,0.72)";
+
+  ctx.font =
+    '400 23px "Poppins", ui-sans-serif, system-ui, sans-serif';
+
+  const maximumTaglineWidth =
+    width - 80;
+
+  let tagline =
+    field.tagline || "";
 
   while (
-    ctx.measureText(tagline).width > maximumTaglineWidth &&
+    ctx.measureText(tagline).width >
+      maximumTaglineWidth &&
     tagline.length > 3
   ) {
-    tagline = tagline.slice(0, -1);
+    tagline = tagline.slice(
+      0,
+      -1,
+    );
   }
 
-  if (tagline !== field.tagline) {
-    tagline = `${tagline.slice(0, -1)}…`;
+  if (
+    tagline !== field.tagline
+  ) {
+    tagline =
+      `${tagline.slice(0, -1)}…`;
   }
 
-  ctx.fillText(tagline, 40, height - 100);
-  ctx.restore();
-
-  ctx.save();
-  ctx.fillStyle = active ? accent : "#64748B";
-  ctx.font = "700 20px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillText(active ? "VIEW MORE  →" : "LOCKED", 40, height - 50);
-  ctx.restore();
-
-  ctx.save();
-  ctx.globalAlpha = 0.055;
-  ctx.fillStyle = "#F8FAFC";
-
-  for (let y = 0; y < height; y += 3) {
-    ctx.fillRect(0, y, width, 1);
-  }
+  ctx.fillText(
+    tagline,
+    40,
+    height - 98,
+  );
 
   ctx.restore();
 
+  /**
+   * CTA.
+   */
   ctx.save();
+
+  ctx.fillStyle = active
+    ? accent
+    : "#64748B";
+
+  ctx.shadowColor = active
+    ? accent
+    : "transparent";
+
+  ctx.shadowBlur = active
+    ? 10
+    : 0;
+
+  ctx.font =
+    '600 19px "Poppins", ui-sans-serif, system-ui, sans-serif';
+
+  ctx.fillText(
+    active
+      ? "EXPLORE FIELD  →"
+      : "FIELD LOCKED",
+    40,
+    height - 48,
+  );
+
+  ctx.restore();
+
+  /**
+   * Status dot.
+   */
+  ctx.save();
+
+  ctx.beginPath();
+
+  ctx.arc(
+    width - 52,
+    height - 53,
+    6,
+    0,
+    Math.PI * 2,
+  );
+
+  ctx.fillStyle = active
+    ? accent
+    : "#475569";
+
+  ctx.shadowColor = active
+    ? accent
+    : "transparent";
+
+  ctx.shadowBlur = active
+    ? 14
+    : 0;
+
+  ctx.fill();
+
+  ctx.restore();
+
+  /**
+   * Scanlines tipis.
+   */
+  ctx.save();
+
   ctx.globalAlpha = 0.025;
-  ctx.fillStyle = "#DC2626";
-  ctx.fillRect(0, 0, width, height);
+  ctx.fillStyle = "#FFFFFF";
+
+  for (
+    let y = 0;
+    y < height;
+    y += 4
+  ) {
+    ctx.fillRect(
+      0,
+      y,
+      width,
+      1,
+    );
+  }
+
   ctx.restore();
+
+  /**
+   * Vignette layar.
+   */
+  const vignette =
+    ctx.createRadialGradient(
+      width / 2,
+      height / 2,
+      width * 0.25,
+      width / 2,
+      height / 2,
+      width * 0.75,
+    );
+
+  vignette.addColorStop(
+    0,
+    "rgba(0,0,0,0)",
+  );
+
+  vignette.addColorStop(
+    1,
+    "rgba(0,0,0,0.3)",
+  );
+
+  ctx.fillStyle = vignette;
+  ctx.fillRect(0, 0, width, height);
 }
 
 export function CareerScreen({
@@ -269,23 +791,36 @@ export function CareerScreen({
   accent,
   onActivate,
 }: Props) {
-  const groupRef = useRef<THREE.Group>(null);
-  const lightRef = useRef<THREE.PointLight>(null);
+  const groupRef =
+    useRef<THREE.Group>(null);
 
-  const [hovered, setHovered] = useState(false);
+  const lightRef =
+    useRef<THREE.PointLight>(
+      null,
+    );
 
-  const active = field.status === "active";
+  const [hovered, setHovered] =
+    useState(false);
+
+  const active =
+    field.status === "active";
 
   const texture = useMemo(() => {
-    const canvas = document.createElement("canvas");
+    const canvas =
+      document.createElement(
+        "canvas",
+      );
 
     canvas.width = 1024;
     canvas.height = 576;
 
-    const context = canvas.getContext("2d");
+    const context =
+      canvas.getContext("2d");
 
     if (!context) {
-      throw new Error("Canvas 2D context tidak tersedia.");
+      throw new Error(
+        "Canvas 2D context tidak tersedia.",
+      );
     }
 
     drawAbstract(
@@ -305,19 +840,34 @@ export function CareerScreen({
       accent,
     );
 
-    const canvasTexture = new THREE.CanvasTexture(canvas);
+    const canvasTexture =
+      new THREE.CanvasTexture(
+        canvas,
+      );
 
-    canvasTexture.colorSpace = THREE.SRGBColorSpace;
+    canvasTexture.colorSpace =
+      THREE.SRGBColorSpace;
+
     canvasTexture.anisotropy = 8;
-    canvasTexture.minFilter = THREE.LinearMipmapLinearFilter;
-    canvasTexture.magFilter = THREE.LinearFilter;
-    canvasTexture.generateMipmaps = true;
-    canvasTexture.needsUpdate = true;
+
+    canvasTexture.minFilter =
+      THREE.LinearMipmapLinearFilter;
+
+    canvasTexture.magFilter =
+      THREE.LinearFilter;
+
+    canvasTexture.generateMipmaps =
+      true;
+
+    canvasTexture.needsUpdate =
+      true;
 
     if (field.mediaUrl) {
-      const image = new Image();
+      const image =
+        new Image();
 
-      image.crossOrigin = "anonymous";
+      image.crossOrigin =
+        "anonymous";
 
       image.onload = () => {
         context.clearRect(
@@ -351,7 +901,8 @@ export function CareerScreen({
           accent,
         );
 
-        canvasTexture.needsUpdate = true;
+        canvasTexture.needsUpdate =
+          true;
       };
 
       image.onerror = () => {
@@ -379,10 +930,12 @@ export function CareerScreen({
           accent,
         );
 
-        canvasTexture.needsUpdate = true;
+        canvasTexture.needsUpdate =
+          true;
       };
 
-      image.src = field.mediaUrl;
+      image.src =
+        field.mediaUrl;
     }
 
     return canvasTexture;
@@ -406,43 +959,80 @@ export function CareerScreen({
 
   useEffect(() => {
     return () => {
-      document.body.style.cursor = "auto";
+      document.body.style.cursor =
+        "auto";
     };
   }, []);
 
-  useFrame((state, delta) => {
-    if (!groupRef.current) {
-      return;
-    }
+  useFrame(
+    (state, delta) => {
+      if (
+        !groupRef.current
+      ) {
+        return;
+      }
 
-    const targetScale = hovered && active ? 1.055 : 1;
-    const currentScale = groupRef.current.scale.x;
-    const scaleSpeed = Math.min(1, delta * 7);
+      const targetScale =
+        hovered && active
+          ? 1.045
+          : 1;
 
-    const nextScale =
-      currentScale +
-      (targetScale - currentScale) * scaleSpeed;
+      const currentScale =
+        groupRef.current.scale.x;
 
-    groupRef.current.scale.setScalar(nextScale);
+      const scaleSpeed =
+        Math.min(
+          1,
+          delta * 7,
+        );
 
-    const targetRotationZ =
-      hovered && active
-        ? Math.sin(state.clock.elapsedTime * 1.4) * 0.008
-        : 0;
+      const nextScale =
+        currentScale +
+        (targetScale -
+          currentScale) *
+          scaleSpeed;
 
-    groupRef.current.rotation.z +=
-      (targetRotationZ - groupRef.current.rotation.z) *
-      Math.min(1, delta * 5);
+      groupRef.current.scale.setScalar(
+        nextScale,
+      );
 
-    if (lightRef.current) {
-      const targetIntensity =
-        hovered && active ? 4.2 : active ? 1.8 : 0.9;
+      const targetRotationZ =
+        hovered && active
+          ? Math.sin(
+              state.clock
+                .elapsedTime *
+                1.4,
+            ) * 0.006
+          : 0;
 
-      lightRef.current.intensity +=
-        (targetIntensity - lightRef.current.intensity) *
-        Math.min(1, delta * 6);
-    }
-  });
+      groupRef.current.rotation.z +=
+        (targetRotationZ -
+          groupRef.current
+            .rotation.z) *
+        Math.min(
+          1,
+          delta * 5,
+        );
+
+      if (lightRef.current) {
+        const targetIntensity =
+          hovered && active
+            ? 2.2
+            : active
+              ? 0.9
+              : 0.35;
+
+        lightRef.current.intensity +=
+          (targetIntensity -
+            lightRef.current
+              .intensity) *
+          Math.min(
+            1,
+            delta * 6,
+          );
+      }
+    },
+  );
 
   const handleClick = (
     event: ThreeEvent<MouseEvent>,
@@ -458,10 +1048,12 @@ export function CareerScreen({
     event: ThreeEvent<PointerEvent>,
   ) => {
     event.stopPropagation();
+
     setHovered(true);
 
     if (active) {
-      document.body.style.cursor = "pointer";
+      document.body.style.cursor =
+        "pointer";
     }
   };
 
@@ -469,51 +1061,141 @@ export function CareerScreen({
     event: ThreeEvent<PointerEvent>,
   ) => {
     event.stopPropagation();
+
     setHovered(false);
-    document.body.style.cursor = "auto";
+
+    document.body.style.cursor =
+      "auto";
   };
 
   return (
     <group
       ref={groupRef}
       position={position}
-      rotation={[0, rotationY, 0]}
+      rotation={[
+        0,
+        rotationY,
+        0,
+      ]}
     >
+      {/* Shadow frame */}
       <RoundedBox
-        args={[4.72, 2.92, 0.24]}
+        args={[
+          4.84,
+          3.04,
+          0.28,
+        ]}
+        radius={0.12}
+        smoothness={5}
+        position={[
+          0,
+          -0.03,
+          -0.05,
+        ]}
+      >
+        <meshStandardMaterial
+          color="#020617"
+          metalness={0.82}
+          roughness={0.32}
+        />
+      </RoundedBox>
+
+      {/* Main dark frame */}
+      <RoundedBox
+        args={[
+          4.72,
+          2.92,
+          0.24,
+        ]}
         radius={0.1}
         smoothness={5}
         castShadow
         receiveShadow
       >
         <meshStandardMaterial
-          color="#FFFFFF"
-          metalness={0.9}
-          roughness={0.28}
+          color="#0B1120"
+          metalness={0.88}
+          roughness={0.26}
         />
       </RoundedBox>
 
+      {/* Inner bezel */}
       <RoundedBox
-        args={[4.5, 2.7, 0.255]}
+        args={[
+          4.5,
+          2.7,
+          0.255,
+        ]}
         radius={0.075}
         smoothness={4}
-        position={[0, 0, 0.02]}
+        position={[
+          0,
+          0,
+          0.02,
+        ]}
         castShadow
       >
         <meshStandardMaterial
-          color="#FFFFFF"
-          metalness={0.58}
-          roughness={0.5}
+          color="#111827"
+          metalness={0.7}
+          roughness={0.36}
         />
       </RoundedBox>
 
-      <mesh
-        position={[0, 0, 0.155]}
-        onClick={handleClick}
-        onPointerOver={handlePointerOver}
-        onPointerOut={handlePointerOut}
+      {/* Accent frame */}
+      <RoundedBox
+        args={[
+          4.37,
+          2.57,
+          0.035,
+        ]}
+        radius={0.055}
+        smoothness={4}
+        position={[
+          0,
+          0,
+          0.151,
+        ]}
       >
-        <planeGeometry args={[4.28, 2.48]} />
+        <meshBasicMaterial
+          color={
+            active
+              ? accent
+              : "#334155"
+          }
+          transparent
+          opacity={
+            hovered && active
+              ? 0.7
+              : active
+                ? 0.38
+                : 0.18
+          }
+          toneMapped={false}
+        />
+      </RoundedBox>
+
+      {/* Display */}
+      <mesh
+        position={[
+          0,
+          0,
+          0.174,
+        ]}
+        onClick={handleClick}
+        onPointerOver={
+          handlePointerOver
+        }
+        onPointerOut={
+          handlePointerOut
+        }
+      >
+        <planeGeometry
+          args={[
+            4.28,
+            2.48,
+          ]}
+        />
 
         <meshBasicMaterial
           map={texture}
@@ -522,25 +1204,92 @@ export function CareerScreen({
         />
       </mesh>
 
-      <mesh position={[0, 0, 0.163]}>
-        <planeGeometry args={[4.3, 2.5]} />
+      {/* Hover glow */}
+      <mesh
+        position={[
+          0,
+          0,
+          0.181,
+        ]}
+      >
+        <planeGeometry
+          args={[
+            4.29,
+            2.49,
+          ]}
+        />
 
         <meshBasicMaterial
-          color={accent}
+          color={
+            active
+              ? accent
+              : "#334155"
+          }
           transparent
-          opacity={hovered && active ? 0.08 : 0.025}
-          blending={THREE.AdditiveBlending}
+          opacity={
+            hovered && active
+              ? 0.075
+              : 0
+          }
+          blending={
+            THREE.AdditiveBlending
+          }
           depthWrite={false}
           toneMapped={false}
         />
       </mesh>
 
+      {/* Bottom status light */}
+      <mesh
+        position={[
+          0,
+          -1.39,
+          0.16,
+        ]}
+      >
+        <boxGeometry
+          args={[
+            0.36,
+            0.025,
+            0.025,
+          ]}
+        />
+
+        <meshBasicMaterial
+          color={
+            active
+              ? accent
+              : "#334155"
+          }
+          transparent
+          opacity={
+            active
+              ? 0.9
+              : 0.45
+          }
+          toneMapped={false}
+        />
+      </mesh>
+
+      {/* Accent light */}
       <pointLight
         ref={lightRef}
-        position={[0, 0, 1]}
-        intensity={active ? 1.8 : 0.9}
-        distance={5.5}
-        color={active ? accent : "#64748B"}
+        position={[
+          0,
+          0,
+          1.1,
+        ]}
+        intensity={
+          active
+            ? 0.9
+            : 0.35
+        }
+        distance={4.5}
+        color={
+          active
+            ? accent
+            : "#334155"
+        }
         decay={2}
       />
     </group>
