@@ -99,7 +99,6 @@ function AuthPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <SiteHeader />
       <main className="flex-1 grid lg:grid-cols-2">
         <section className="hidden lg:flex relative border-r border-line grid-bg items-center justify-center p-12">
           <div className="max-w-md">
