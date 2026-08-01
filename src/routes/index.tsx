@@ -102,10 +102,8 @@ function LandingPage() {
 
         <footer className="border-t border-line mt-0">
           <div className="mx-auto max-w-7xl px-6 py-10 flex flex-wrap items-center justify-between gap-4 text-sm text-ink-muted">
-            <p className="font-mono-cl">
-              CareerLab · CITECH 2026 · Universitas Jember
-            </p>
-            <p className="eyebrow">Mission Engine v1</p>
+            <p className="font-mono-cl">Evola · 2026 </p>
+            <p className="eyebrow">Simulasi Karir</p>
           </div>
         </footer>
       </main>

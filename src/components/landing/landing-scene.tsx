@@ -1,232 +1,167 @@
-import { Suspense, useEffect, useRef } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { ScrollControls, useScroll } from "@react-three/drei";
-import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
-import * as THREE from "three";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Center, Float, OrbitControls, useGLTF } from "@react-three/drei";
+import { Suspense, useRef } from "react";
+import type { Group } from "three";
 
-import { useIsMobile } from "@/hooks/use-mobile";
-import { StudioEnvironment } from "./studio-environment";
-import { CareerCore } from "./career-core";
-import { WorkstationPanels } from "./workstation-panels";
+type CareerModelProps = {
+  path: string;
+  position: [number, number, number];
+  rotation?: [number, number, number];
+  scale?: number;
+  floatSpeed?: number;
+};
 
-interface LandingSceneProps {
-  onReady?: () => void;
+function CareerModel({
+  path,
+  position,
+  rotation = [0, 0, 0],
+  scale = 1,
+  floatSpeed = 1.2,
+}: CareerModelProps) {
+  const { scene } = useGLTF(path);
+
+  return (
+    <Float
+      speed={floatSpeed}
+      rotationIntensity={0.15}
+      floatIntensity={0.3}
+      floatingRange={[-0.12, 0.12]}
+    >
+      <group position={position} rotation={rotation} scale={scale}>
+        <Center>
+          <primitive object={scene.clone()} />
+        </Center>
+      </group>
+    </Float>
+  );
 }
 
-function CameraRig({ isMobile }: { isMobile: boolean }) {
-  const scroll = useScroll();
-  const { camera, pointer } = useThree();
-  const elapsedTime = useRef(0);
+function CareerOrbit() {
+  const groupRef = useRef<Group>(null);
 
   useFrame((_, delta) => {
-    elapsedTime.current += delta;
+    if (!groupRef.current) return;
 
-    const progress = THREE.MathUtils.clamp(scroll.offset, 0, 1);
-
-    const startZ = isMobile ? 10.5 : 8;
-    const middleZ = isMobile ? 4.6 : 3;
-    const endZ = isMobile ? -12 : -10;
-
-    const targetZ =
-      progress < 0.5
-        ? THREE.MathUtils.lerp(startZ, middleZ, progress / 0.5)
-        : THREE.MathUtils.lerp(middleZ, endZ, (progress - 0.5) / 0.5);
-
-    const targetX = isMobile
-      ? 0
-      : THREE.MathUtils.lerp(0, -1.5, Math.min(1, progress * 1.3));
-
-    const targetY = THREE.MathUtils.lerp(
-      isMobile ? 0.75 : 0.6,
-      isMobile ? 0.25 : 0.2,
-      progress,
-    );
-
-    const parallaxX = isMobile
-      ? 0
-      : pointer.x * 0.25 + Math.sin(elapsedTime.current * 0.4) * 0.08;
-
-    const parallaxY = isMobile
-      ? 0
-      : pointer.y * 0.15 + Math.cos(elapsedTime.current * 0.3) * 0.05;
-
-    camera.position.x = THREE.MathUtils.damp(
-      camera.position.x,
-      targetX + parallaxX,
-      3,
-      delta,
-    );
-
-    camera.position.y = THREE.MathUtils.damp(
-      camera.position.y,
-      targetY + parallaxY,
-      3,
-      delta,
-    );
-
-    camera.position.z = THREE.MathUtils.damp(
-      camera.position.z,
-      targetZ,
-      3,
-      delta,
-    );
-
-    const workstationProgress = THREE.MathUtils.smoothstep(progress, 0.28, 1);
-
-    const lookAtZ = THREE.MathUtils.lerp(
-      0,
-      isMobile ? -20 : -16,
-      workstationProgress,
-    );
-
-    camera.lookAt(0, 0.1, lookAtZ);
-  });
-
-  return null;
-}
-
-function ProgressiveWorkstationPanels({ isMobile }: { isMobile: boolean }) {
-  const groupRef = useRef<THREE.Group>(null);
-  const scroll = useScroll();
-
-  useFrame(() => {
-    if (!groupRef.current) {
-      return;
-    }
-
-    groupRef.current.visible = !isMobile || scroll.offset >= 0.34;
+    groupRef.current.rotation.y += delta * 0.12;
   });
 
   return (
-    <group ref={groupRef} visible={!isMobile}>
-      <WorkstationPanels z={isMobile ? -20 : -14} />
+    <group ref={groupRef} rotation={[0.05, -0.35, 0]}>
+      <CareerModel
+        path="/models/careers/programmer-laptop.glb"
+        position={[-1.65, 0.65, 0]}
+        rotation={[0.05, 0.4, -0.08]}
+        scale={0.9}
+      />
+
+      <CareerModel
+        path="/models/careers/designer-tablet.glb"
+        position={[1.45, 0.75, -0.25]}
+        rotation={[-0.05, -0.55, 0.08]}
+        scale={0.85}
+        floatSpeed={1}
+      />
+
+      <CareerModel
+        path="/models/careers/data-chart.glb"
+        position={[0.15, -1.25, 0.35]}
+        rotation={[0.1, 0.1, 0]}
+        scale={0.85}
+        floatSpeed={1.4}
+      />
+
+      <mesh position={[0, 0, -0.7]}>
+        <sphereGeometry args={[1.15, 48, 48]} />
+
+        <meshPhysicalMaterial
+          color="#7c3aed"
+          transparent
+          opacity={0.08}
+          roughness={0.35}
+          metalness={0.05}
+          transmission={0.25}
+          thickness={0.8}
+        />
+      </mesh>
+
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[2.3, 0.008, 8, 100]} />
+
+        <meshBasicMaterial color="#7c3aed" transparent opacity={0.22} />
+      </mesh>
     </group>
   );
 }
 
-/*
- * Komponen ini hanya akan dirender setelah seluruh
- * isi di dalam Suspense selesai dimuat.
- */
-function SceneReady({ onReady }: { onReady?: () => void }) {
-  const hasRendered = useRef(false);
-  const frameCount = useRef(0);
-
-  useFrame(() => {
-    if (hasRendered.current) {
-      return;
-    }
-
-    frameCount.current += 1;
-
-    /*
-     * Tunggu beberapa frame agar Canvas benar-benar
-     * sudah tampil, bukan hanya berhasil dibuat.
-     */
-    if (frameCount.current >= 3) {
-      hasRendered.current = true;
-      onReady?.();
-    }
-  });
-
-  return null;
-}
-
-function SceneContent({
-  isMobile,
-  onReady,
-}: {
-  isMobile: boolean;
-  onReady?: () => void;
-}) {
-  const corePosition: [number, number, number] = isMobile
-    ? [0.8, -0.35, 0]
-    : [0, 0.2, 0];
-
+function SceneContent() {
   return (
     <>
-      <ScrollControls pages={3} damping={isMobile ? 0.2 : 0.28} distance={1}>
-        <CameraRig isMobile={isMobile} />
+      <ambientLight intensity={1.6} />
 
-        <StudioEnvironment isMobile={isMobile} />
+      <directionalLight position={[4, 5, 4]} intensity={2.5} />
 
-        <CareerCore position={corePosition} />
+      <directionalLight position={[-4, 1, 2]} intensity={1.2} />
 
-        <ProgressiveWorkstationPanels isMobile={isMobile} />
-      </ScrollControls>
+      <pointLight
+        position={[0, -2, 3]}
+        intensity={8}
+        distance={8}
+        color="#7c3aed"
+      />
 
-      {!isMobile && (
-        <EffectComposer multisampling={4}>
-          <Bloom
-            intensity={0.3}
-            luminanceThreshold={0.4}
-            luminanceSmoothing={0.9}
-            mipmapBlur
-          />
+      <Suspense fallback={null}>
+        <CareerOrbit />
+      </Suspense>
 
-          <Vignette eskil={false} offset={0.2} darkness={0.85} />
-        </EffectComposer>
-      )}
-
-      <SceneReady onReady={onReady} />
+      <OrbitControls
+        enableZoom={false}
+        enablePan={false}
+        enableDamping
+        dampingFactor={0.06}
+        autoRotate={false}
+        minPolarAngle={Math.PI / 2.6}
+        maxPolarAngle={Math.PI / 1.75}
+      />
     </>
   );
 }
 
-export function LandingScene({ onReady }: LandingSceneProps) {
-  const isMobile = useIsMobile();
-
-  /*
-   * Saat perubahan ukuran layar terjadi,
-   * Canvas akan menyesuaikan ukurannya kembali.
-   */
-  useEffect(() => {
-    const handleResize = () => {
-      window.dispatchEvent(new Event("resize"));
-    };
-
-    const timeout = window.setTimeout(handleResize, 100);
-
-    return () => {
-      window.clearTimeout(timeout);
-    };
-  }, [isMobile]);
-
+export function LandingScene() {
   return (
-    <Canvas
-      dpr={[1, isMobile ? 1.5 : 1.75]}
-      camera={{
-        position: [0, isMobile ? 0.75 : 0.6, isMobile ? 10.5 : 8],
-        fov: isMobile ? 46 : 48,
-        near: 0.1,
-        far: 120,
-      }}
-      gl={{
-        powerPreference: "high-performance",
-        antialias: true,
-        alpha: false,
-        preserveDrawingBuffer: false,
-      }}
-      fallback={<div className="h-full w-full bg-[#F8FAFC]" />}
-      onCreated={({ gl, scene }) => {
-        gl.toneMapping = THREE.ACESFilmicToneMapping;
-
-        gl.toneMappingExposure = 1;
-
-        gl.outputColorSpace = THREE.SRGBColorSpace;
-
-        scene.fog = new THREE.Fog(
-          "#F8FAFC",
-          isMobile ? 7 : 8,
-          isMobile ? 21 : 32,
-        );
-      }}
+    <div
+      className="
+        relative h-full w-full overflow-hidden
+        rounded-[2rem]
+      "
+      aria-hidden="true"
     >
-      <color attach="background" args={["#F8FAFC"]} />
+      <div
+        className="
+          pointer-events-none absolute inset-8
+          rounded-full bg-accent/10 blur-3xl
+        "
+      />
 
-      <Suspense fallback={null}>
-        <SceneContent isMobile={isMobile} onReady={onReady} />
-      </Suspense>
-    </Canvas>
+      <Canvas
+        camera={{
+          position: [0, 0.15, 7],
+          fov: 38,
+          near: 0.1,
+          far: 100,
+        }}
+        dpr={[1, 1.5]}
+        gl={{
+          alpha: true,
+          antialias: true,
+          powerPreference: "high-performance",
+        }}
+      >
+        <SceneContent />
+      </Canvas>
+    </div>
   );
 }
+
+useGLTF.preload("/models/careers/programmer-laptop.glb");
+useGLTF.preload("/models/careers/designer-tablet.glb");
+useGLTF.preload("/models/careers/data-chart.glb");

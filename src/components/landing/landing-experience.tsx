@@ -153,7 +153,7 @@ function StaticHero() {
 
       <section className="border-t border-line/60">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24">
-          <p className="eyebrow">Bagaimana Mission Engine Bekerja</p>
+          <p className="eyebrow">Cara Evola Bekerja</p>
 
           <h2 className="mt-4 max-w-2xl font-display text-4xl sm:text-5xl">
             Bukan kursus. Bukan kuis. Ini simulasi kerja.
