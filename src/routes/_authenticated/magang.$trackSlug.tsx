@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/magang/$trackSlug")({
     meta: [{ title: `Misi · ${params.trackSlug} · CareerLab` }, { name: "robots", content: "noindex" }],
   }),
   loaderDeps: ({ search }) => ({ role: search.role }),
-  loader: ({ context, params, deps }) => context.queryClient.ensureQueryData(qo(params.trackSlug, deps.role)),
+  loader: ({ context, params, deps }) => context.queryClient.ensureQueryData(qo(params.trackSlug, (deps as { role: InternRole }).role)),
   errorComponent: ({ error }) => (
     <div className="mx-auto max-w-3xl px-6 py-16" role="alert">
       <h1 className="font-display text-3xl">Gagal memuat data misi</h1>
