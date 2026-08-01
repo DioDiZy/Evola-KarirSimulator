@@ -66,14 +66,14 @@ function LandingPage() {
           <div className="mx-auto max-w-7xl px-6 py-24">
             <div className="flex flex-wrap items-end justify-between gap-6">
               <div>
-                <p className="eyebrow">Bidang Karier · Field Gallery</p>
+                <p className="eyebrow">Bidang Karier</p>
                 <h2 className="mt-4 font-display text-4xl sm:text-5xl">
-                  Pilih dunia yang ingin kamu rasakan.
+                  Pilih bidangnya. Rasakan pekerjaannya.
                 </h2>
               </div>
               <p className="max-w-md text-ink-dim">
-                MVP fokus pada Teknologi Informasi. Bidang lain sedang
-                disiapkan.
+                Saat ini tersedia: Teknologi Informasi. Bidang lainnya segera
+                hadir.
               </p>
             </div>
             <div className="mt-10">
@@ -84,18 +84,18 @@ function LandingPage() {
 
         <section className="border-t border-line/60">
           <div className="mx-auto max-w-4xl px-6 py-24 text-center">
-            <p className="eyebrow">Mulai Sekarang</p>
+            <p className="eyebrow">SIAP MENCOBA? </p>
             <h2 className="mt-6 font-display text-4xl sm:text-6xl">
-              Wawancara pertamamu jangan
+              Jangan tunggu wawancara untuk
               <br />
-              jadi <span className="text-accent">simulasi pertamamu.</span>
+              merasakan <span className="text-accent"> dunia kerja.</span>
             </h2>
             <Link
               to="/auth"
               search={{ mode: "signup" }}
               className="mt-10 inline-flex items-center gap-2 rounded-md bg-accent px-6 py-3 text-sm font-medium text-accent-ink"
             >
-              Buat Akun Gratis <ArrowRight className="h-4 w-4" />
+              Mulai Simulasi Gratis <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </section>
