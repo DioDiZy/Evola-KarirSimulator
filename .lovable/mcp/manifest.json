@@ -11,9 +11,9 @@
   },
   "mcp": {
     "server": {
-      "name": "careerlab-mcp",
+      "name": "Evola-mcp",
       "version": "0.1.0",
-      "title": "CareerLab Mission Engine"
+      "title": "Evola Mission Engine"
     },
     "tools": [
       {
