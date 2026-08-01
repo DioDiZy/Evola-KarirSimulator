@@ -16,6 +16,7 @@ import {
   formatTime,
   type ChatMessage,
 } from "./chat-bubbles";
+import { type InternRole } from "@/lib/intern-roles";
 import { AnswerOptionList } from "./answer-options";
 import { MissionProgress } from "./mission-progress";
 import { SeniorAvatar } from "./senior-avatar";
@@ -32,7 +33,15 @@ type FlatQuestion = {
 };
 
 export type InternChatRoomProps = {
-  mission: { id: string; slug: string; title: string; reward_credit: number; senior_name: string; senior_title: string };
+  mission: {
+    id: string;
+    slug: string;
+    title: string;
+    reward_credit: number;
+    senior_name: string;
+    senior_title: string;
+    target_role?: string;
+  };
   track: { slug: string; name: string } | null;
   jobs: InternJob[];
   answers: InternAnswerRecord[];
@@ -303,6 +312,7 @@ export function InternChatRoom({ mission, track, jobs, answers, displayName }: I
             <Link
               to="/magang/$trackSlug"
               params={{ trackSlug: track?.slug ?? "" }}
+              search={{ role: (mission.target_role ?? "magang") as InternRole }}
               aria-label="Kembali ke daftar misi"
               className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-line text-ink-dim hover:text-ink"
             >

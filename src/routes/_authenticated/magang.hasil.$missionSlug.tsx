@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { getInternMissionRun, listInternMissions } from "@/lib/intern.functions";
 import { MissionResultCard } from "@/components/intern/mission-result-card";
+import { ROLE_META, type InternRole } from "@/lib/intern-roles";
 
 const runQO = (missionSlug: string) =>
   queryOptions({
@@ -35,10 +36,11 @@ function InternResultPage() {
   const { missionSlug } = Route.useParams();
   const { data } = useSuspenseQuery(runQO(missionSlug));
   const trackSlug = data.track?.slug ?? "";
+  const missionRole = ((data.mission as { target_role?: string }).target_role ?? "magang") as InternRole;
   const { data: list } = useSuspenseQuery(
     queryOptions({
-      queryKey: ["intern", "missions", trackSlug],
-      queryFn: () => listInternMissions({ data: { trackSlug } }),
+      queryKey: ["intern", "missions", trackSlug, missionRole],
+      queryFn: () => listInternMissions({ data: { trackSlug, role: missionRole } }),
     }),
   );
 
@@ -78,6 +80,8 @@ function InternResultPage() {
         incorrect={incorrect}
         credit={data.progress.credit_awarded}
         nextMissionSlug={next?.slug ?? null}
+        role={missionRole}
+        roleLabel={ROLE_META[missionRole].label}
       />
     </div>
   );

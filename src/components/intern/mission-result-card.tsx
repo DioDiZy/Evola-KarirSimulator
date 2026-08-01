@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { CheckCircle2, XCircle, Trophy, ArrowRight, BookOpen } from "lucide-react";
 import { SeniorAvatar } from "./senior-avatar";
+import { type InternRole } from "@/lib/intern-roles";
 
 export function MissionResultCard({
   missionTitle,
@@ -12,6 +13,8 @@ export function MissionResultCard({
   incorrect,
   credit,
   nextMissionSlug,
+  role = "magang",
+  roleLabel = "Magang",
 }: {
   missionTitle: string;
   trackName: string;
@@ -22,6 +25,8 @@ export function MissionResultCard({
   incorrect: number;
   credit: number;
   nextMissionSlug?: string | null;
+  role?: InternRole;
+  roleLabel?: string;
 }) {
   const total = correct + incorrect;
   const pct = total ? Math.round((correct / total) * 100) : 0;
@@ -30,7 +35,7 @@ export function MissionResultCard({
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
       <div className="surface-panel p-6 sm:p-8">
-        <p className="eyebrow">Hasil Misi Magang</p>
+        <p className="eyebrow">Hasil Misi Role {roleLabel}</p>
         <h1 className="mt-2 font-display text-3xl leading-tight">{missionTitle}</h1>
         <p className="mt-1 text-sm text-ink-dim">{trackName}</p>
 
@@ -65,6 +70,7 @@ export function MissionResultCard({
           <Link
             to="/magang/$trackSlug"
             params={{ trackSlug }}
+            search={{ role }}
             className="inline-flex min-h-11 items-center rounded-md border border-line px-4 text-sm hover:border-primary-cyan"
           >
             Kembali ke daftar misi
