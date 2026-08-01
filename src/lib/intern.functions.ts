@@ -1,38 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
+import type { InternRole } from "@/lib/intern-roles";
+import { roleAccessFromProgress, resolveRoleFromInput } from "@/lib/intern-roles.server";
 
 /* ---------------- Types ---------------- */
 
-export type InternRole = "magang" | "pekerja" | "senior";
-
-export const ROLE_ORDER: InternRole[] = ["magang", "pekerja", "senior"];
-
-export const ROLE_META: Record<
-  InternRole,
-  { label: string; blurb: string; requirement: string; difficulty: string }
-> = {
-  magang: {
-    label: "Magang",
-    blurb: "Dibimbing langsung AI Senior lewat room chat, dengan pilihan jawaban terarah.",
-    requirement: "Terbuka untuk semua akun baru.",
-    difficulty: "Pemula",
-  },
-  pekerja: {
-    label: "Pekerja",
-    blurb: "Kamu mengeksekusi tugas nyata sendiri dengan trade-off teknis dan tenggat ketat.",
-    requirement: "Selesaikan 2 misi role Magang.",
-    difficulty: "Menengah",
-  },
-  senior: {
-    label: "Senior",
-    blurb: "Kamu memimpin arah kerja, menilai risiko, dan menentukan prioritas tim.",
-    requirement: "Selesaikan 2 misi role Pekerja.",
-    difficulty: "Lanjutan",
-  },
-};
-
-export const ROLE_MISSION_REQUIREMENT = 2;
+export type { InternRole };
 
 export type RoleAccess = {
   role: InternRole;
@@ -51,6 +25,7 @@ export type InternTrackSummary = {
   missionCount: number;
   completedCount: number;
 };
+
 
 
 export type InternMissionSummary = {
