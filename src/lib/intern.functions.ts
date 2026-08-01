@@ -477,27 +477,24 @@ export const answerInternQuestion = createServerFn({ method: "POST" })
 
     const justAwardedCredit = missionCompleted && !alreadyCompleted ? mission.reward_credit : 0;
 
-    // Unlock worker role once the intern requirement is met
+    // Promote the profile to the highest role the user has unlocked
     let roleUnlocked = false;
+    let unlockedRole: InternRole | null = null;
     if (missionCompleted) {
-      const { data: allProgress } = await supabase
-        .from("user_intern_progress")
-        .select("status, credit_awarded")
-        .eq("user_id", userId);
-      const totalCredits = (allProgress ?? []).reduce((s, r) => s + r.credit_awarded, 0);
-      const completedMissions = (allProgress ?? []).filter((r) => r.status === "completed").length;
-      if (totalCredits >= 10 && completedMissions >= 2) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", userId)
-          .maybeSingle();
-        if (profile?.role !== "pekerja") {
-          await supabase.from("profiles").update({ role: "pekerja" }).eq("id", userId);
-          roleUnlocked = true;
-        }
+      const access = await roleAccessFromProgress(supabase, userId);
+      const highest = access.highestUnlocked as InternRole;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", userId)
+        .maybeSingle();
+      if (profile?.role !== highest) {
+        await supabase.from("profiles").update({ role: highest }).eq("id", userId);
+        roleUnlocked = true;
+        unlockedRole = highest;
       }
     }
+
 
     return {
       questionId: question.id,
