@@ -76,33 +76,45 @@ export const getMyInternProfile = createServerFn({ method: "GET" })
       .select("id, display_name, role")
       .eq("id", userId)
       .maybeSingle();
-    const { data: progress } = await supabase
-      .from("user_intern_progress")
-      .select("status, credit_awarded")
-      .eq("user_id", userId);
-    const rows = progress ?? [];
-    const credits = rows.reduce((s, r) => s + r.credit_awarded, 0);
-    const completed = rows.filter((r) => r.status === "completed").length;
+    const access = await roleAccessFromProgress(supabase, userId);
     return {
       displayName: profile?.display_name ?? "",
       role: (profile?.role ?? "magang") as InternRole,
-      internCredits: credits,
-      completedMissions: completed,
-      workerUnlocked: credits >= 10 && completed >= 2,
+      highestUnlockedRole: access.highestUnlocked as InternRole,
+      internCredits: access.credits.magang,
+      completedMissions: access.completed.magang,
+      totalCredits: access.totalCredits,
+      totalCompletedMissions: access.totalCompleted,
+      roles: access.stats as RoleAccess[],
+      workerUnlocked: access.byRole.get("pekerja")?.unlocked ?? false,
     };
+  });
+
+export const getRoleAccess = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<RoleAccess[]> => {
+    const access = await roleAccessFromProgress(context.supabase, context.userId);
+    return access.stats;
   });
 
 /* ---------------- Catalog ---------------- */
 
 export const listInternTracks = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<InternTrackSummary[]> => {
+  .inputValidator((i: { role?: string } | undefined) =>
+    z.object({ role: z.string().optional() }).parse(i ?? {}),
+  )
+  .handler(async ({ context, data }): Promise<InternTrackSummary[]> => {
     const { supabase, userId } = context;
+    const role = resolveRoleFromInput(data.role);
+    const access = await roleAccessFromProgress(supabase, userId);
+    assertRoleUnlocked(access.byRole.get(role), role);
+
     const [{ data: tracks }, { data: fields }, { data: missions }, { data: progress }] =
       await Promise.all([
         supabase.from("career_tracks").select("id, slug, name, tagline, field_id, sort_order").order("sort_order"),
         supabase.from("fields").select("id, name"),
-        supabase.from("intern_missions").select("id, track_id"),
+        supabase.from("intern_missions").select("id, track_id").eq("target_role", role),
         supabase.from("user_intern_progress").select("mission_id, status").eq("user_id", userId),
       ]);
 
@@ -127,9 +139,15 @@ export const listInternTracks = createServerFn({ method: "GET" })
 
 export const listInternMissions = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((i: { trackSlug: string }) => z.object({ trackSlug: z.string() }).parse(i))
+  .inputValidator((i: { trackSlug: string; role?: string }) =>
+    z.object({ trackSlug: z.string(), role: z.string().optional() }).parse(i),
+  )
   .handler(async ({ context, data }) => {
     const { supabase, userId } = context;
+    const role = resolveRoleFromInput(data.role);
+    const access = await roleAccessFromProgress(supabase, userId);
+    assertRoleUnlocked(access.byRole.get(role), role);
+
     const { data: track } = await supabase
       .from("career_tracks")
       .select("id, slug, name, tagline")
@@ -139,10 +157,11 @@ export const listInternMissions = createServerFn({ method: "GET" })
 
     const { data: missions } = await supabase
       .from("intern_missions")
-      .select("id, slug, title, description, reward_credit, senior_name")
+      .select("id, slug, title, description, reward_credit, senior_name, difficulty, target_role")
       .eq("track_id", track.id)
-      .eq("target_role", "magang")
+      .eq("target_role", role)
       .order("order_index");
+
 
     const missionIds = (missions ?? []).map((m) => m.id);
     const [{ data: jobs }, { data: progress }] = await Promise.all([
