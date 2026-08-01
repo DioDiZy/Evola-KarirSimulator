@@ -48,7 +48,7 @@ export const Route = createFileRoute("/_authenticated/magang/")({
 });
 
 function RoleTrackList() {
-  const { role } = Route.useSearch();
+  const { role } = Route.useSearch() as { role: InternRole };
   const { data: tracks } = useSuspenseQuery(tracksQO(role));
   const { data: rolesData } = useSuspenseQuery(accessQO);
   const roles = rolesData as Array<{
