@@ -215,7 +215,7 @@ export const listInternMissions = createServerFn({ method: "GET" })
       };
     });
 
-    return { track, missions: list };
+    return { track, missions: list, role };
   });
 
 /* ---------------- Mission run ---------------- */
@@ -228,10 +228,18 @@ export const getInternMissionRun = createServerFn({ method: "GET" })
 
     const { data: mission } = await supabase
       .from("intern_missions")
-      .select("id, slug, title, description, reward_credit, senior_name, senior_title, track_id")
+      .select(
+        "id, slug, title, description, reward_credit, senior_name, senior_title, track_id, target_role, difficulty",
+      )
       .eq("slug", data.missionSlug)
       .maybeSingle();
     if (!mission) throw new Error("Misi tidak ditemukan");
+
+    const missionRole = resolveRoleFromInput(mission.target_role);
+    const access = await roleAccessFromProgress(supabase, userId);
+    assertRoleUnlocked(access.byRole.get(missionRole), missionRole);
+
+
 
     const [{ data: track }, { data: jobs }, { data: progress }, { data: profile }] = await Promise.all([
       supabase.from("career_tracks").select("id, slug, name").eq("id", mission.track_id).maybeSingle(),
