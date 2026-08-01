@@ -4,7 +4,43 @@ import { z } from "zod";
 
 /* ---------------- Types ---------------- */
 
-export type InternRole = "magang" | "pekerja";
+export type InternRole = "magang" | "pekerja" | "senior";
+
+export const ROLE_ORDER: InternRole[] = ["magang", "pekerja", "senior"];
+
+export const ROLE_META: Record<
+  InternRole,
+  { label: string; blurb: string; requirement: string; difficulty: string }
+> = {
+  magang: {
+    label: "Magang",
+    blurb: "Dibimbing langsung AI Senior lewat room chat, dengan pilihan jawaban terarah.",
+    requirement: "Terbuka untuk semua akun baru.",
+    difficulty: "Pemula",
+  },
+  pekerja: {
+    label: "Pekerja",
+    blurb: "Kamu mengeksekusi tugas nyata sendiri dengan trade-off teknis dan tenggat ketat.",
+    requirement: "Selesaikan 2 misi role Magang.",
+    difficulty: "Menengah",
+  },
+  senior: {
+    label: "Senior",
+    blurb: "Kamu memimpin arah kerja, menilai risiko, dan menentukan prioritas tim.",
+    requirement: "Selesaikan 2 misi role Pekerja.",
+    difficulty: "Lanjutan",
+  },
+};
+
+export const ROLE_MISSION_REQUIREMENT = 2;
+
+export type RoleAccess = {
+  role: InternRole;
+  unlocked: boolean;
+  completedMissions: number;
+  requiredMissions: number;
+  credits: number;
+};
 
 export type InternTrackSummary = {
   id: string;
@@ -15,6 +51,7 @@ export type InternTrackSummary = {
   missionCount: number;
   completedCount: number;
 };
+
 
 export type InternMissionSummary = {
   id: string;
