@@ -510,5 +510,7 @@ export const answerInternQuestion = createServerFn({ method: "POST" })
       missionCompleted,
       creditAwarded: justAwardedCredit,
       roleUnlocked,
+      unlockedRole,
     };
+
   });
