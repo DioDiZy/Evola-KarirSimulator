@@ -1,10 +1,24 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
+import type { InternRole } from "@/lib/intern-roles";
+import {
+  roleAccessFromProgress,
+  resolveRoleFromInput,
+  assertRoleUnlocked,
+} from "@/lib/intern-roles.server";
 
 /* ---------------- Types ---------------- */
 
-export type InternRole = "magang" | "pekerja";
+export type { InternRole };
+
+export type RoleAccess = {
+  role: InternRole;
+  unlocked: boolean;
+  completedMissions: number;
+  requiredMissions: number;
+  credits: number;
+};
 
 export type InternTrackSummary = {
   id: string;
@@ -15,6 +29,8 @@ export type InternTrackSummary = {
   missionCount: number;
   completedCount: number;
 };
+
+
 
 export type InternMissionSummary = {
   id: string;
@@ -64,33 +80,45 @@ export const getMyInternProfile = createServerFn({ method: "GET" })
       .select("id, display_name, role")
       .eq("id", userId)
       .maybeSingle();
-    const { data: progress } = await supabase
-      .from("user_intern_progress")
-      .select("status, credit_awarded")
-      .eq("user_id", userId);
-    const rows = progress ?? [];
-    const credits = rows.reduce((s, r) => s + r.credit_awarded, 0);
-    const completed = rows.filter((r) => r.status === "completed").length;
+    const access = await roleAccessFromProgress(supabase, userId);
     return {
       displayName: profile?.display_name ?? "",
       role: (profile?.role ?? "magang") as InternRole,
-      internCredits: credits,
-      completedMissions: completed,
-      workerUnlocked: credits >= 10 && completed >= 2,
+      highestUnlockedRole: access.highestUnlocked as InternRole,
+      internCredits: access.credits.magang,
+      completedMissions: access.completed.magang,
+      totalCredits: access.totalCredits,
+      totalCompletedMissions: access.totalCompleted,
+      roles: access.stats as RoleAccess[],
+      workerUnlocked: access.byRole.get("pekerja")?.unlocked ?? false,
     };
+  });
+
+export const getRoleAccess = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<RoleAccess[]> => {
+    const access = await roleAccessFromProgress(context.supabase, context.userId);
+    return access.stats;
   });
 
 /* ---------------- Catalog ---------------- */
 
 export const listInternTracks = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<InternTrackSummary[]> => {
+  .inputValidator((i: { role?: string } | undefined) =>
+    z.object({ role: z.string().optional() }).parse(i ?? {}),
+  )
+  .handler(async ({ context, data }): Promise<InternTrackSummary[]> => {
     const { supabase, userId } = context;
+    const role = resolveRoleFromInput(data.role);
+    const access = await roleAccessFromProgress(supabase, userId);
+    assertRoleUnlocked(access.byRole.get(role), role);
+
     const [{ data: tracks }, { data: fields }, { data: missions }, { data: progress }] =
       await Promise.all([
         supabase.from("career_tracks").select("id, slug, name, tagline, field_id, sort_order").order("sort_order"),
         supabase.from("fields").select("id, name"),
-        supabase.from("intern_missions").select("id, track_id"),
+        supabase.from("intern_missions").select("id, track_id").eq("target_role", role),
         supabase.from("user_intern_progress").select("mission_id, status").eq("user_id", userId),
       ]);
 
@@ -115,9 +143,15 @@ export const listInternTracks = createServerFn({ method: "GET" })
 
 export const listInternMissions = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((i: { trackSlug: string }) => z.object({ trackSlug: z.string() }).parse(i))
+  .inputValidator((i: { trackSlug: string; role?: string }) =>
+    z.object({ trackSlug: z.string(), role: z.string().optional() }).parse(i),
+  )
   .handler(async ({ context, data }) => {
     const { supabase, userId } = context;
+    const role = resolveRoleFromInput(data.role);
+    const access = await roleAccessFromProgress(supabase, userId);
+    assertRoleUnlocked(access.byRole.get(role), role);
+
     const { data: track } = await supabase
       .from("career_tracks")
       .select("id, slug, name, tagline")
@@ -127,10 +161,11 @@ export const listInternMissions = createServerFn({ method: "GET" })
 
     const { data: missions } = await supabase
       .from("intern_missions")
-      .select("id, slug, title, description, reward_credit, senior_name")
+      .select("id, slug, title, description, reward_credit, senior_name, difficulty, target_role")
       .eq("track_id", track.id)
-      .eq("target_role", "magang")
+      .eq("target_role", role)
       .order("order_index");
+
 
     const missionIds = (missions ?? []).map((m) => m.id);
     const [{ data: jobs }, { data: progress }] = await Promise.all([
@@ -180,7 +215,7 @@ export const listInternMissions = createServerFn({ method: "GET" })
       };
     });
 
-    return { track, missions: list };
+    return { track, missions: list, role };
   });
 
 /* ---------------- Mission run ---------------- */
@@ -193,10 +228,18 @@ export const getInternMissionRun = createServerFn({ method: "GET" })
 
     const { data: mission } = await supabase
       .from("intern_missions")
-      .select("id, slug, title, description, reward_credit, senior_name, senior_title, track_id")
+      .select(
+        "id, slug, title, description, reward_credit, senior_name, senior_title, track_id, target_role, difficulty",
+      )
       .eq("slug", data.missionSlug)
       .maybeSingle();
     if (!mission) throw new Error("Misi tidak ditemukan");
+
+    const missionRole = resolveRoleFromInput(mission.target_role);
+    const access = await roleAccessFromProgress(supabase, userId);
+    assertRoleUnlocked(access.byRole.get(missionRole), missionRole);
+
+
 
     const [{ data: track }, { data: jobs }, { data: progress }, { data: profile }] = await Promise.all([
       supabase.from("career_tracks").select("id, slug, name").eq("id", mission.track_id).maybeSingle(),
@@ -434,27 +477,24 @@ export const answerInternQuestion = createServerFn({ method: "POST" })
 
     const justAwardedCredit = missionCompleted && !alreadyCompleted ? mission.reward_credit : 0;
 
-    // Unlock worker role once the intern requirement is met
+    // Promote the profile to the highest role the user has unlocked
     let roleUnlocked = false;
+    let unlockedRole: InternRole | null = null;
     if (missionCompleted) {
-      const { data: allProgress } = await supabase
-        .from("user_intern_progress")
-        .select("status, credit_awarded")
-        .eq("user_id", userId);
-      const totalCredits = (allProgress ?? []).reduce((s, r) => s + r.credit_awarded, 0);
-      const completedMissions = (allProgress ?? []).filter((r) => r.status === "completed").length;
-      if (totalCredits >= 10 && completedMissions >= 2) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", userId)
-          .maybeSingle();
-        if (profile?.role !== "pekerja") {
-          await supabase.from("profiles").update({ role: "pekerja" }).eq("id", userId);
-          roleUnlocked = true;
-        }
+      const access = await roleAccessFromProgress(supabase, userId);
+      const highest = access.highestUnlocked as InternRole;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", userId)
+        .maybeSingle();
+      if (profile?.role !== highest) {
+        await supabase.from("profiles").update({ role: highest }).eq("id", userId);
+        roleUnlocked = true;
+        unlockedRole = highest;
       }
     }
+
 
     return {
       questionId: question.id,
@@ -470,5 +510,7 @@ export const answerInternQuestion = createServerFn({ method: "POST" })
       missionCompleted,
       creditAwarded: justAwardedCredit,
       roleUnlocked,
+      unlockedRole,
     };
+
   });

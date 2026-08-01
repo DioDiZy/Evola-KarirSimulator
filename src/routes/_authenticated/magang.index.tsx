@@ -1,52 +1,94 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowRight, GraduationCap, Lock, CheckCircle2 } from "lucide-react";
-import { listInternTracks, getMyInternProfile } from "@/lib/intern.functions";
+import { ArrowRight, ArrowLeft, GraduationCap, Lock, CheckCircle2 } from "lucide-react";
+import { listInternTracks, getRoleAccess } from "@/lib/intern.functions";
+import { ROLE_META, isInternRole, type InternRole } from "@/lib/intern-roles";
 
-const tracksQO = queryOptions({ queryKey: ["intern", "tracks"], queryFn: () => listInternTracks() });
-const meQO = queryOptions({ queryKey: ["intern", "me"], queryFn: () => getMyInternProfile() });
+const tracksQO = (role: InternRole) =>
+  queryOptions({
+    queryKey: ["intern", "tracks", role],
+    queryFn: () => listInternTracks({ data: { role } }),
+  });
+const accessQO = queryOptions({ queryKey: ["intern", "role-access"], queryFn: () => getRoleAccess() });
 
 export const Route = createFileRoute("/_authenticated/magang/")({
+  validateSearch: (search: Record<string, unknown>): { role: InternRole } => {
+    const raw = typeof search.role === "string" ? search.role : "magang";
+    return { role: isInternRole(raw) ? raw : "magang" };
+  },
   head: () => ({
-    meta: [{ title: "Program Magang · CareerLab" }, { name: "robots", content: "noindex" }],
+    meta: [
+      { title: "Misi Karier · CareerLab" },
+      { name: "description", content: "Pilih bidang karier dan jalankan misi sesuai tingkat role kamu." },
+      { name: "robots", content: "noindex" },
+    ],
   }),
-  loader: async ({ context }) => {
+  loaderDeps: ({ search }) => ({ role: search.role }),
+  loader: async ({ context, deps }) => {
     await Promise.all([
-      context.queryClient.ensureQueryData(tracksQO),
-      context.queryClient.ensureQueryData(meQO),
+      context.queryClient.ensureQueryData(tracksQO(deps.role)),
+      context.queryClient.ensureQueryData(accessQO),
     ]);
   },
-  component: InternHome,
+  errorComponent: ({ error }) => (
+    <div className="mx-auto max-w-3xl px-6 py-16" role="alert">
+      <h1 className="font-display text-3xl">Role ini belum bisa dibuka</h1>
+      <p className="mt-2 text-sm text-ink-dim">{error.message}</p>
+      <Link to="/roles" className="mt-6 inline-flex min-h-11 items-center rounded-md border border-line px-4 text-sm">
+        Lihat tingkatan role
+      </Link>
+    </div>
+  ),
+  notFoundComponent: () => (
+    <div className="mx-auto max-w-3xl px-6 py-16">
+      <h1 className="font-display text-3xl">Halaman tidak ditemukan</h1>
+    </div>
+  ),
+  component: RoleTrackList,
 });
 
-function InternHome() {
-  const { data: tracks } = useSuspenseQuery(tracksQO);
-  const { data: me } = useSuspenseQuery(meQO);
+function RoleTrackList() {
+  const { role } = Route.useSearch() as { role: InternRole };
+  const { data: tracks } = useSuspenseQuery(tracksQO(role));
+  const { data: rolesData } = useSuspenseQuery(accessQO);
+  const roles = rolesData as Array<{
+    role: InternRole;
+    unlocked: boolean;
+    completedMissions: number;
+    requiredMissions: number;
+    credits: number;
+  }>;
+  const meta = ROLE_META[role];
+  const stat = roles.find((r) => r.role === role);
+  const nextRole = roles.find((r) => ROLE_META[r.role].unlockedBy === role);
+
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-12">
-      <p className="eyebrow inline-flex items-center gap-2">
-        <GraduationCap className="h-3.5 w-3.5" aria-hidden="true" /> Role Magang
+      <Link to="/roles" className="inline-flex items-center gap-1 text-sm text-ink-muted hover:text-ink">
+        <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> Tingkatan role
+      </Link>
+
+      <p className="mt-6 eyebrow inline-flex items-center gap-2">
+        <GraduationCap className="h-3.5 w-3.5" aria-hidden="true" /> Role {meta.label} · {meta.difficulty}
       </p>
       <h1 className="mt-3 font-display text-4xl sm:text-5xl">Pilih bidang karier yang ingin kamu coba.</h1>
       <p className="mt-3 max-w-2xl text-sm text-ink-dim">
-        Bidang yang tersedia sama dengan role Pekerja, hanya saja tugasnya dibimbing langsung oleh AI Senior
-        lewat room chat. Kumpulkan 10 kredit dari 2 misi untuk membuka role Pekerja.
+        Semua role memiliki bidang karier yang sama — yang membedakan hanya tingkat kesulitan misinya.{" "}
+        {meta.blurb}
       </p>
 
       <div className="mt-8 grid gap-3 sm:grid-cols-3">
-        <Stat label="Kredit magang" value={`${me.internCredits}`} accent />
-        <Stat label="Misi selesai" value={`${me.completedMissions}`} />
-        <Stat
-          label="Status role"
-          value={me.role === "pekerja" ? "Pekerja terbuka" : "Magang"}
-        />
+        <Stat label={`Kredit role ${meta.label}`} value={`${stat?.credits ?? 0}`} accent />
+        <Stat label="Misi selesai" value={`${stat?.completedMissions ?? 0}`} />
+        <Stat label="Tingkat kesulitan" value={meta.difficulty} />
       </div>
 
-      {me.role !== "pekerja" && (
+      {nextRole && !nextRole.unlocked && (
         <p className="mt-4 inline-flex items-center gap-2 rounded-lg border border-line bg-surface-2/60 px-3 py-2 text-xs text-ink-dim">
           <Lock className="h-3.5 w-3.5" aria-hidden="true" />
-          Role Pekerja terbuka setelah 2 misi magang selesai (10 kredit).
+          Role {ROLE_META[nextRole.role].label} terbuka setelah {nextRole.requiredMissions} misi role{" "}
+          {meta.label} selesai ({stat?.completedMissions ?? 0}/{nextRole.requiredMissions}).
         </p>
       )}
 
@@ -61,6 +103,7 @@ function InternHome() {
               key={t.id}
               to="/magang/$trackSlug"
               params={{ trackSlug: t.slug }}
+              search={{ role }}
               className="surface-panel group flex flex-col p-5 transition hover:border-primary-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-cyan"
             >
               <p className="eyebrow">{t.fieldName}</p>

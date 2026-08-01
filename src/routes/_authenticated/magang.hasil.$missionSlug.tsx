@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { getInternMissionRun, listInternMissions } from "@/lib/intern.functions";
 import { MissionResultCard } from "@/components/intern/mission-result-card";
+import { ROLE_META, type InternRole } from "@/lib/intern-roles";
 
 const runQO = (missionSlug: string) =>
   queryOptions({
@@ -18,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/magang/hasil/$missionSlug"
     <div className="mx-auto max-w-3xl px-6 py-16" role="alert">
       <h1 className="font-display text-3xl">Gagal memuat hasil misi</h1>
       <p className="mt-2 text-sm text-ink-dim">{error.message}</p>
-      <Link to="/magang" className="mt-6 inline-flex min-h-11 items-center rounded-md border border-line px-4 text-sm">
+      <Link to="/magang" search={{ role: "magang" as const }} className="mt-6 inline-flex min-h-11 items-center rounded-md border border-line px-4 text-sm">
         Kembali ke daftar bidang
       </Link>
     </div>
@@ -35,10 +36,11 @@ function InternResultPage() {
   const { missionSlug } = Route.useParams();
   const { data } = useSuspenseQuery(runQO(missionSlug));
   const trackSlug = data.track?.slug ?? "";
+  const missionRole = ((data.mission as { target_role?: string }).target_role ?? "magang") as InternRole;
   const { data: list } = useSuspenseQuery(
     queryOptions({
-      queryKey: ["intern", "missions", trackSlug],
-      queryFn: () => listInternMissions({ data: { trackSlug } }),
+      queryKey: ["intern", "missions", trackSlug, missionRole],
+      queryFn: () => listInternMissions({ data: { trackSlug, role: missionRole } }),
     }),
   );
 
@@ -78,6 +80,8 @@ function InternResultPage() {
         incorrect={incorrect}
         credit={data.progress.credit_awarded}
         nextMissionSlug={next?.slug ?? null}
+        role={missionRole}
+        roleLabel={ROLE_META[missionRole].label}
       />
     </div>
   );

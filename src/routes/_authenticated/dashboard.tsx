@@ -2,6 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { listFields, getMyProgress } from "@/lib/careerlab.functions";
 import { CareerTunnel, type CareerTunnelField } from "@/components/dashboard/career-tunnel";
+import { Link } from "@tanstack/react-router";
+import { getRoleAccess } from "@/lib/intern.functions";
+import { ROLE_META, ROLE_ORDER, type InternRole } from "@/lib/intern-roles";
+import { ArrowRight, Lock, CheckCircle2 } from "lucide-react";
+
+const rolesQO = queryOptions({ queryKey: ["intern", "role-access"], queryFn: () => getRoleAccess() });
 
 const fieldsQO = queryOptions({ queryKey: ["fields"], queryFn: () => listFields() });
 const progressQO = queryOptions({ queryKey: ["progress"], queryFn: () => getMyProgress() });
@@ -19,6 +25,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
     await Promise.all([
       context.queryClient.ensureQueryData(fieldsQO),
       context.queryClient.ensureQueryData(progressQO),
+      context.queryClient.ensureQueryData(rolesQO),
     ]);
   },
   component: Dashboard,
@@ -27,6 +34,8 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 function Dashboard() {
   const { data: fields } = useSuspenseQuery(fieldsQO);
   const { data: progress } = useSuspenseQuery(progressQO);
+  const { data: rolesData } = useSuspenseQuery(rolesQO);
+  const roles = rolesData as Array<{ role: InternRole; unlocked: boolean; completedMissions: number }>;
   const totalCredits = progress.trackProgress.reduce((s, p) => s + p.career_credits, 0);
   const totalPP = progress.trackProgress.reduce((s, p) => s + p.performance_points, 0);
 
@@ -49,6 +58,49 @@ function Dashboard() {
         <Stat label="Performance Points" value={totalPP} />
         <Stat label="Track diikuti" value={progress.trackProgress.length} />
       </div>
+
+      <section className="mt-14">
+        <p className="eyebrow">Jalur Role</p>
+        <h2 className="mt-3 font-display text-3xl">Mulai dari Magang, naik ke Pekerja, lalu Senior.</h2>
+        <p className="mt-2 max-w-2xl text-sm text-ink-dim">
+          Semua role memakai bidang karier yang sama, hanya tingkat kesulitan misinya yang berbeda.
+        </p>
+        <div className="mt-6 grid gap-3 sm:grid-cols-3">
+          {ROLE_ORDER.map((r) => {
+            const stat = roles.find((x) => x.role === r);
+            const meta = ROLE_META[r];
+            const unlocked = stat?.unlocked ?? false;
+            return unlocked ? (
+              <Link
+                key={r}
+                to="/magang"
+                search={{ role: r }}
+                className="surface-panel group p-5 transition hover:border-primary-cyan"
+              >
+                <p className="eyebrow inline-flex items-center gap-1.5">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-primary-cyan" aria-hidden="true" /> {meta.difficulty}
+                </p>
+                <p className="mt-2 font-display text-2xl">Role {meta.label}</p>
+                <p className="mt-1 text-xs text-ink-muted">{stat?.completedMissions ?? 0} misi selesai</p>
+                <span className="mt-4 inline-flex items-center gap-1.5 text-xs text-primary-cyan">
+                  Buka misi <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" aria-hidden="true" />
+                </span>
+              </Link>
+            ) : (
+              <div key={r} className="surface-panel p-5 opacity-75">
+                <p className="eyebrow inline-flex items-center gap-1.5">
+                  <Lock className="h-3.5 w-3.5" aria-hidden="true" /> Terkunci
+                </p>
+                <p className="mt-2 font-display text-2xl">Role {meta.label}</p>
+                <p className="mt-1 text-xs text-ink-muted">{meta.requirement}</p>
+              </div>
+            );
+          })}
+        </div>
+        <Link to="/roles" className="mt-4 inline-flex items-center gap-1.5 text-sm text-ink-dim hover:text-ink">
+          Lihat detail tingkatan role <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+        </Link>
+      </section>
 
       <div className="mt-16">
         <p className="eyebrow">Bidang Karier</p>

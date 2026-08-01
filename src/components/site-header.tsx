@@ -62,11 +62,11 @@ export function SiteHeader({ variant = "app" }: { variant?: Variant } = {}) {
             Dashboard
           </Link>
           <Link
-            to="/magang"
+            to="/roles"
             onClick={onNavigate}
             className="text-ink-dim hover:text-primary-cyan transition-colors min-h-11 inline-flex items-center"
           >
-            Magang
+            Jalur Karier
           </Link>
           <Link
             to="/profile"

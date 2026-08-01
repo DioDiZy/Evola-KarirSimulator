@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/magang/misi/$missionSlug")
     <div className="mx-auto max-w-3xl px-6 py-16" role="alert">
       <h1 className="font-display text-3xl">Gagal memuat misi</h1>
       <p className="mt-2 text-sm text-ink-dim">{error.message}</p>
-      <Link to="/magang" className="mt-6 inline-flex min-h-11 items-center rounded-md border border-line px-4 text-sm">
+      <Link to="/magang" search={{ role: "magang" as const }} className="mt-6 inline-flex min-h-11 items-center rounded-md border border-line px-4 text-sm">
         Kembali ke daftar bidang
       </Link>
     </div>
