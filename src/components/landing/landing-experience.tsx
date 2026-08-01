@@ -52,7 +52,7 @@ export function LandingExperience() {
 
   return (
     <div className="relative">
-      <section className="relative min-h-[100svh] overflow-hidden">
+      <section className="relative overflow-hidden">
         <div className="grid-bg pointer-events-none absolute inset-0 opacity-40" />
 
         <div className="relative mx-auto max-w-7xl px-4 pb-20 pt-32 sm:px-6 sm:pb-24">
@@ -116,7 +116,7 @@ function HeroBackdrop() {
 function StaticHero() {
   return (
     <>
-      <section className="relative min-h-[100svh] overflow-hidden">
+      <section className="relative overflow-hidden">
         <div className="grid-bg pointer-events-none absolute inset-0 opacity-40" />
 
         <div className="relative mx-auto max-w-7xl px-4 pb-20 pt-32 sm:px-6 sm:pb-24">
