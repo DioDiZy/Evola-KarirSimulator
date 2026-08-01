@@ -23,9 +23,7 @@ function NotFoundComponent() {
         <div className="max-w-md text-center">
           <p className="eyebrow">404 · Halaman Tidak Ditemukan</p>
           <h1 className="mt-4 font-display text-5xl">Halaman ini tidak ada.</h1>
-          <p className="mt-3 text-sm text-ink-muted">
-            Mungkin sedang dipindahkan atau tautan sudah usang.
-          </p>
+
           <Link
             to="/"
             className="mt-6 inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-ink"

@@ -167,7 +167,7 @@ function DesktopCareerVisual() {
         icon={Code2}
         label="Programmer"
         className="left-4 top-[14%]"
-        stackDirection="right"
+        stackDirection="left"
         rotation="-2deg"
       />
 
@@ -175,8 +175,8 @@ function DesktopCareerVisual() {
       <CareerBadge
         icon={Palette}
         label="UI/UX Designer"
-        className="right-0 top-[29%]"
-        stackDirection="left"
+        className="right-[-30] top-[29%]"
+        stackDirection="right"
         rotation="2deg"
       />
 

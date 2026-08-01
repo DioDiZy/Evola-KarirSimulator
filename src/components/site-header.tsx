@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Flame, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import "/public/evola.png";
 
 type Variant = "landing" | "app";
 function EvolaLogo({ className = "" }: { className?: string }) {
