@@ -2,18 +2,24 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, CheckCircle2, MessageSquare, Timer } from "lucide-react";
 import { listInternMissions } from "@/lib/intern.functions";
+import { ROLE_META, isInternRole, type InternRole } from "@/lib/intern-roles";
 
-const qo = (trackSlug: string) =>
+const qo = (trackSlug: string, role: InternRole) =>
   queryOptions({
-    queryKey: ["intern", "missions", trackSlug],
-    queryFn: () => listInternMissions({ data: { trackSlug } }),
+    queryKey: ["intern", "missions", trackSlug, role],
+    queryFn: () => listInternMissions({ data: { trackSlug, role } }),
   });
 
 export const Route = createFileRoute("/_authenticated/magang/$trackSlug")({
+  validateSearch: (search: Record<string, unknown>): { role: InternRole } => {
+    const raw = typeof search.role === "string" ? search.role : "magang";
+    return { role: isInternRole(raw) ? raw : "magang" };
+  },
   head: ({ params }) => ({
-    meta: [{ title: `Misi Magang · ${params.trackSlug} · CareerLab` }, { name: "robots", content: "noindex" }],
+    meta: [{ title: `Misi · ${params.trackSlug} · CareerLab` }, { name: "robots", content: "noindex" }],
   }),
-  loader: ({ context, params }) => context.queryClient.ensureQueryData(qo(params.trackSlug)),
+  loaderDeps: ({ search }) => ({ role: search.role }),
+  loader: ({ context, params, deps }) => context.queryClient.ensureQueryData(qo(params.trackSlug, deps.role)),
   errorComponent: ({ error }) => (
     <div className="mx-auto max-w-3xl px-6 py-16" role="alert">
       <h1 className="font-display text-3xl">Gagal memuat data misi</h1>
@@ -33,22 +39,24 @@ export const Route = createFileRoute("/_authenticated/magang/$trackSlug")({
 
 function InternMissionList() {
   const { trackSlug } = Route.useParams();
-  const { data } = useSuspenseQuery(qo(trackSlug));
+  const { role } = Route.useSearch() as { role: InternRole };
+  const meta = ROLE_META[role];
+  const { data } = useSuspenseQuery(qo(trackSlug, role));
   const { track, missions } = data;
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10 sm:py-12">
-      <Link to="/magang" className="inline-flex items-center gap-1 text-sm text-ink-muted hover:text-ink">
+      <Link to="/magang" search={{ role }} className="inline-flex items-center gap-1 text-sm text-ink-muted hover:text-ink">
         <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> Bidang karier
       </Link>
 
-      <p className="mt-6 eyebrow">Misi Pemula</p>
+      <p className="mt-6 eyebrow">Misi Role {meta.label} · {meta.difficulty}</p>
       <h1 className="mt-2 font-display text-4xl sm:text-5xl">{track.name}</h1>
       <p className="mt-2 max-w-2xl text-sm text-ink-dim">{track.tagline}</p>
 
       {missions.length === 0 ? (
         <p className="mt-10 surface-panel p-6 text-sm text-ink-muted">
-          Belum ada misi magang untuk bidang ini. Coba bidang lain dulu ya.
+          Belum ada misi role {meta.label} untuk bidang ini. Coba bidang lain dulu ya.
         </p>
       ) : (
         <ul className="mt-8 space-y-4">
@@ -58,7 +66,7 @@ function InternMissionList() {
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="rounded-full border border-line px-2.5 py-0.5 text-[11px] uppercase tracking-wider text-ink-muted">
-                      Pemula
+                      {meta.difficulty}
                     </span>
                     {m.status === "completed" && (
                       <span className="inline-flex items-center gap-1 rounded-full border border-primary-cyan/40 bg-primary-cyan/10 px-2.5 py-0.5 text-[11px] text-primary-cyan">
