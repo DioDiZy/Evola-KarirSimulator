@@ -12,19 +12,29 @@ export function TunnelEnvironment({ length, isMobile }: Props) {
   const ceilingLamps = useMemo(() => {
     const spacing = isMobile ? 6 : 4;
     const count = Math.ceil(length / spacing);
-    return Array.from({ length: count }, (_, i) => -halfLen + i * spacing + spacing / 2);
+    return Array.from(
+      { length: count },
+      (_, i) => -halfLen + i * spacing + spacing / 2,
+    );
   }, [length, halfLen, isMobile]);
 
   const wallPanels = useMemo(() => {
     const spacing = 4;
     const count = Math.ceil(length / spacing);
-    return Array.from({ length: count }, (_, i) => -halfLen + i * spacing + spacing / 2);
+    return Array.from(
+      { length: count },
+      (_, i) => -halfLen + i * spacing + spacing / 2,
+    );
   }, [length, halfLen]);
 
   return (
     <group>
       {/* Floor */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.2, -halfLen + length / 2]} receiveShadow>
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -2.2, -halfLen + length / 2]}
+        receiveShadow
+      >
         <planeGeometry args={[16, length]} />
         <MeshReflectorMaterial
           blur={[300, 100]}
@@ -74,11 +84,19 @@ export function TunnelEnvironment({ length, isMobile }: Props) {
         <group key={`panel-${z}`}>
           <mesh position={[-7.29, 0.6, z]}>
             <boxGeometry args={[0.02, 4.8, 0.06]} />
-            <meshStandardMaterial color="#F1F5F9" metalness={0.7} roughness={0.4} />
+            <meshStandardMaterial
+              color="#F1F5F9"
+              metalness={0.7}
+              roughness={0.4}
+            />
           </mesh>
           <mesh position={[7.29, 0.6, z]}>
             <boxGeometry args={[0.02, 4.8, 0.06]} />
-            <meshStandardMaterial color="#F1F5F9" metalness={0.7} roughness={0.4} />
+            <meshStandardMaterial
+              color="#F1F5F9"
+              metalness={0.7}
+              roughness={0.4}
+            />
           </mesh>
         </group>
       ))}
@@ -91,14 +109,30 @@ export function TunnelEnvironment({ length, isMobile }: Props) {
             <meshBasicMaterial color="#F1F5F9" toneMapped={false} />
           </mesh>
           {!isMobile && (
-            <pointLight position={[0, -0.3, 0]} intensity={6} distance={9} color="#E2E8F0" decay={2} />
+            <pointLight
+              position={[0, -0.3, 0]}
+              intensity={6}
+              distance={9}
+              color="#E2E8F0"
+              decay={2}
+            />
           )}
         </group>
       ))}
 
-      {isMobile && ceilingLamps.filter((_, i) => i % 2 === 0).map((z, i) => (
-        <pointLight key={`mlp-${i}`} position={[0, 2.9, z]} intensity={5} distance={10} color="#E2E8F0" decay={2} />
-      ))}
+      {isMobile &&
+        ceilingLamps
+          .filter((_, i) => i % 2 === 0)
+          .map((z, i) => (
+            <pointLight
+              key={`mlp-${i}`}
+              position={[0, 2.9, z]}
+              intensity={5}
+              distance={10}
+              color="#E2E8F0"
+              decay={2}
+            />
+          ))}
 
       <ambientLight intensity={0.7} />
       <hemisphereLight args={["#64748B", "#EEF2F7", 0.4]} />

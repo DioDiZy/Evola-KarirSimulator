@@ -1,5 +1,11 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Float, MeshReflectorMaterial, Text, Line, Html } from "@react-three/drei";
+import {
+  Float,
+  MeshReflectorMaterial,
+  Text,
+  Line,
+  Html,
+} from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import { useNavigate } from "@tanstack/react-router";
 import { useRef, useState, useMemo } from "react";
@@ -13,9 +19,14 @@ export type MapEpisode = {
   career_credit_reward: number;
   level_id: string;
 };
-export type MapLevel = { id: string; name: string; status: string; description: string | null };
+export type MapLevel = {
+  id: string;
+  name: string;
+  status: string;
+  description: string | null;
+};
 
-const ACCENT = "#0891B2";
+const ACCENT = "#070B14";
 const CYAN = "#2563EB";
 const VIOLET = "#7C3AED";
 
@@ -48,20 +59,40 @@ function EpisodeNode({
   useFrame((_, dt) => {
     if (!g.current) return;
     const targetY = node.position[1] + (hover && !node.locked ? 0.2 : 0);
-    g.current.position.y = THREE.MathUtils.damp(g.current.position.y, targetY, 4, dt);
-    const s = THREE.MathUtils.damp(g.current.scale.x, selected ? 1.25 : hover ? 1.08 : 1, 5, dt);
+    g.current.position.y = THREE.MathUtils.damp(
+      g.current.position.y,
+      targetY,
+      4,
+      dt,
+    );
+    const s = THREE.MathUtils.damp(
+      g.current.scale.x,
+      selected ? 1.25 : hover ? 1.08 : 1,
+      5,
+      dt,
+    );
     g.current.scale.setScalar(s);
     if (hex.current) {
       hex.current.rotation.y += dt * (hover ? 1.5 : 0.4);
       const mat = hex.current.material as THREE.MeshStandardMaterial;
       const target = node.done ? 1.4 : hover && !node.locked ? 1.6 : 0.55;
-      mat.emissiveIntensity = THREE.MathUtils.damp(mat.emissiveIntensity, target, 4, dt);
+      mat.emissiveIntensity = THREE.MathUtils.damp(
+        mat.emissiveIntensity,
+        target,
+        4,
+        dt,
+      );
     }
   });
 
   return (
     <group ref={g} position={node.position}>
-      <Float floatIntensity={0.3} rotationIntensity={0.1} speed={1} enabled={!selected}>
+      <Float
+        floatIntensity={0.3}
+        rotationIntensity={0.1}
+        speed={1}
+        enabled={!selected}
+      >
         <mesh
           ref={hex}
           castShadow
@@ -96,11 +127,21 @@ function EpisodeNode({
         {/* Halo ring */}
         <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
           <torusGeometry args={[0.7, 0.01, 10, 64]} />
-          <meshBasicMaterial color={node.locked ? "#64748B" : node.color} toneMapped={false} />
+          <meshBasicMaterial
+            color={node.locked ? "#64748B" : node.color}
+            toneMapped={false}
+          />
         </mesh>
 
         {/* Number/status pip */}
-        <Text position={[0, 0.12, 0]} fontSize={0.22} anchorX="center" anchorY="middle" color="#0F172A" rotation={[-Math.PI / 2, 0, 0]}>
+        <Text
+          position={[0, 0.12, 0]}
+          fontSize={0.22}
+          anchorX="center"
+          anchorY="middle"
+          color="#0F172A"
+          rotation={[-Math.PI / 2, 0, 0]}
+        >
           {node.done ? "✓" : node.locked ? "•" : "→"}
         </Text>
 
@@ -114,11 +155,27 @@ function EpisodeNode({
         >
           {node.ep.name}
         </Text>
-        <Text position={[0, 0.4, 0]} fontSize={0.06} anchorX="center" anchorY="middle" color={node.color}>
-          {node.locked ? "TERKUNCI" : node.done ? "SELESAI" : `+${node.ep.career_credit_reward} CREDIT`}
+        <Text
+          position={[0, 0.4, 0]}
+          fontSize={0.06}
+          anchorX="center"
+          anchorY="middle"
+          color={node.color}
+        >
+          {node.locked
+            ? "TERKUNCI"
+            : node.done
+              ? "SELESAI"
+              : `+${node.ep.career_credit_reward} CREDIT`}
         </Text>
 
-        <pointLight position={[0, 0.4, 0]} intensity={hover ? 2 : 0.9} color={node.color} distance={3} decay={2} />
+        <pointLight
+          position={[0, 0.4, 0]}
+          intensity={hover ? 2 : 0.9}
+          color={node.color}
+          distance={3}
+          decay={2}
+        />
       </Float>
     </group>
   );
@@ -141,7 +198,11 @@ function Map({
   const target = useRef(new THREE.Vector3(0, 0.2, 0));
 
   const pathPoints = useMemo(
-    () => nodes.map((n) => new THREE.Vector3(n.position[0], n.position[1] + 0.05, n.position[2])),
+    () =>
+      nodes.map(
+        (n) =>
+          new THREE.Vector3(n.position[0], n.position[1] + 0.05, n.position[2]),
+      ),
     [nodes],
   );
 
@@ -167,21 +228,32 @@ function Map({
         selected.position[2] + 2.5,
       );
       camera.position.lerp(targetPos, Math.min(1, dt * 3));
-      target.current.set(selected.position[0], selected.position[1] + 0.2, selected.position[2]);
+      target.current.set(
+        selected.position[0],
+        selected.position[1] + 0.2,
+        selected.position[2],
+      );
       camera.lookAt(target.current);
       if (camera.position.distanceTo(targetPos) < 0.5) onArrive(selected.ep.id);
       return;
     }
 
     // Idle: pan camera along path center
-    const cx = focus ? focus.position[0] * 0.6 : Math.sin(t.current * 0.15) * 1.5;
-    const cz = focus ? focus.position[2] + 4 : 9 + Math.sin(t.current * 0.1) * 0.4;
+    const cx = focus
+      ? focus.position[0] * 0.6
+      : Math.sin(t.current * 0.15) * 1.5;
+    const cz = focus
+      ? focus.position[2] + 4
+      : 9 + Math.sin(t.current * 0.1) * 0.4;
     camera.position.x = THREE.MathUtils.damp(camera.position.x, cx, 1.5, dt);
     camera.position.y = THREE.MathUtils.damp(camera.position.y, 4, 2, dt);
     camera.position.z = THREE.MathUtils.damp(camera.position.z, cz, 1.5, dt);
     const lookX = focus ? focus.position[0] : 0;
     const lookZ = focus ? focus.position[2] : 0;
-    target.current.lerp(new THREE.Vector3(lookX, 0.3, lookZ), Math.min(1, dt * 2));
+    target.current.lerp(
+      new THREE.Vector3(lookX, 0.3, lookZ),
+      Math.min(1, dt * 2),
+    );
     camera.lookAt(target.current);
   });
 
@@ -202,16 +274,34 @@ function Map({
         />
       </mesh>
 
-      <Text position={[0, 3.4, -8]} fontSize={0.5} anchorX="center" anchorY="middle" color="#0F172A">
+      <Text
+        position={[0, 3.4, -8]}
+        fontSize={0.5}
+        anchorX="center"
+        anchorY="middle"
+        color="#0F172A"
+      >
         {trackName.toUpperCase()}
       </Text>
-      <Text position={[0, 2.9, -8]} fontSize={0.12} anchorX="center" anchorY="middle" color={ACCENT}>
+      <Text
+        position={[0, 2.9, -8]}
+        fontSize={0.12}
+        anchorX="center"
+        anchorY="middle"
+        color={ACCENT}
+      >
         MISSION MAP · IKUTI JALUR NEON
       </Text>
 
       {/* Neon path connecting nodes */}
       {pathPoints.length > 1 && (
-        <Line points={pathPoints} color={ACCENT} lineWidth={2} transparent opacity={0.55} />
+        <Line
+          points={pathPoints}
+          color={ACCENT}
+          lineWidth={2}
+          transparent
+          opacity={0.55}
+        />
       )}
 
       {nodes.map((n) => (
@@ -289,8 +379,17 @@ export function TrackMapScene({
   return (
     <Canvas
       dpr={[1, isMobile ? 1 : 1.5]}
-      camera={{ position: [-8, 8, 16], fov: isMobile ? 58 : 48, near: 0.1, far: 120 }}
-      gl={{ powerPreference: "high-performance", antialias: !isMobile, alpha: false }}
+      camera={{
+        position: [-8, 8, 16],
+        fov: isMobile ? 58 : 48,
+        near: 0.1,
+        far: 120,
+      }}
+      gl={{
+        powerPreference: "high-performance",
+        antialias: !isMobile,
+        alpha: false,
+      }}
       onCreated={({ gl, scene }) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping;
         scene.fog = new THREE.Fog("#F8FAFC", 10, 32);
@@ -300,7 +399,12 @@ export function TrackMapScene({
       <Map nodes={nodes} onArrive={onArrive} trackName={trackName} />
       {!isMobile && (
         <EffectComposer>
-          <Bloom intensity={0.85} luminanceThreshold={0.35} luminanceSmoothing={0.9} mipmapBlur />
+          <Bloom
+            intensity={0.85}
+            luminanceThreshold={0.35}
+            luminanceSmoothing={0.9}
+            mipmapBlur
+          />
           <Vignette eskil={false} offset={0.2} darkness={0.9} />
         </EffectComposer>
       )}
