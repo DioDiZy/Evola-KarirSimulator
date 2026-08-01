@@ -2,7 +2,11 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 import type { InternRole } from "@/lib/intern-roles";
-import { roleAccessFromProgress, resolveRoleFromInput } from "@/lib/intern-roles.server";
+import {
+  roleAccessFromProgress,
+  resolveRoleFromInput,
+  assertRoleUnlocked,
+} from "@/lib/intern-roles.server";
 
 /* ---------------- Types ---------------- */
 
