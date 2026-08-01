@@ -50,10 +50,18 @@ export const Route = createFileRoute("/_authenticated/magang/")({
 function RoleTrackList() {
   const { role } = Route.useSearch();
   const { data: tracks } = useSuspenseQuery(tracksQO(role));
-  const { data: roles } = useSuspenseQuery(accessQO);
+  const { data: rolesData } = useSuspenseQuery(accessQO);
+  const roles = rolesData as Array<{
+    role: InternRole;
+    unlocked: boolean;
+    completedMissions: number;
+    requiredMissions: number;
+    credits: number;
+  }>;
   const meta = ROLE_META[role];
   const stat = roles.find((r) => r.role === role);
   const nextRole = roles.find((r) => ROLE_META[r.role].unlockedBy === role);
+
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-12">
