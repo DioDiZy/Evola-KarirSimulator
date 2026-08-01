@@ -1,13 +1,6 @@
+import type { ComponentType } from "react";
 import { Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  BarChart3,
-  Code2,
-  Palette,
-  Target,
-  Sparkles,
-  Trophy,
-} from "lucide-react";
+import { ArrowRight, BarChart3, Code2, Palette } from "lucide-react";
 
 import { MISSION_ENGINE_PANELS } from "./workstation-panels";
 
@@ -15,6 +8,7 @@ export function LandingExperience() {
   return (
     <div className="relative">
       <section className="relative overflow-hidden">
+        {/* Grid background */}
         <div className="grid-bg pointer-events-none absolute inset-0 opacity-40" />
 
         <div
@@ -29,11 +23,12 @@ export function LandingExperience() {
         >
           <HeroContent />
 
-          {/* Desktop only */}
+          {/* Hanya tampil pada desktop */}
           <DesktopCareerVisual />
         </div>
       </section>
 
+      {/* Informasi tambahan untuk screen reader */}
       <section
         className="sr-only"
         aria-label="Bagaimana Mission Engine Bekerja"
@@ -109,59 +104,89 @@ function DesktopCareerVisual() {
       "
       aria-hidden="true"
     >
-      {/* Glow background */}
+      {/* Glow besar di belakang semua objek */}
       <div
         className="
           pointer-events-none absolute left-1/2 top-1/2
-          h-[380px] w-[380px]
+          h-[420px] w-[420px]
           -translate-x-1/2 -translate-y-1/2
-          rounded-full bg-blue-400/15 blur-3xl
+          rounded-full bg-[#7C3AED]/10 blur-3xl
         "
       />
 
-      {/* Orbit line */}
+      {/* Orbit luar */}
       <div
         className="
           absolute left-1/2 top-1/2
-          h-[300px] w-[300px]
+          h-[310px] w-[310px]
           -translate-x-1/2 -translate-y-1/2
-          rounded-full border border-dashed border-accent/20
+          rounded-full border border-dashed border-accent/25
         "
       />
 
-      {/* Center logo card */}
+      {/* Orbit dalam */}
+      <div
+        className="
+          absolute left-1/2 top-1/2
+          h-[220px] w-[220px]
+          -translate-x-1/2 -translate-y-1/2
+          rounded-full border border-accent/10
+        "
+      />
+
+      {/* Logo Evola di tengah */}
       <div
         className="
           absolute left-1/2 top-1/2 z-10
-          flex h-28 w-28 -translate-x-1/2 -translate-y-1/2
-          items-center justify-center rounded-[28px]
-          border border-line bg-white shadow-xl
+          flex h-36 w-40
+          -translate-x-1/2 -translate-y-1/2
+          items-center justify-center
+          rounded-[30px]
+          border border-line/80
+          bg-white/95
+          p-6
+          shadow-[0_24px_70px_rgba(99,102,241,0.18)]
+          backdrop-blur-sm
+          transition-transform duration-500
+          hover:scale-105
         "
       >
         <img
           src="/evola.png"
-          alt="Logo Evola"
-          className="h-22 w-auto object-contain"
+          alt=""
+          draggable={false}
+          className="
+            block max-h-20 w-full
+            select-none object-contain
+          "
         />
       </div>
 
-      {/* Career badges */}
+      {/* Programmer */}
       <CareerBadge
         icon={Code2}
         label="Programmer"
-        className="left-4 top-[12%]"
+        className="left-4 top-[14%]"
+        stackDirection="right"
+        rotation="-2deg"
       />
 
+      {/* UI/UX Designer */}
       <CareerBadge
         icon={Palette}
         label="UI/UX Designer"
-        className="right-0 top-[28%]"
+        className="right-0 top-[29%]"
+        stackDirection="left"
+        rotation="2deg"
       />
 
+      {/* Data Analyst */}
       <CareerBadge
         icon={BarChart3}
         label="Data Analyst"
-        className="left-8 bottom-[10%]"
+        className="left-8 bottom-[12%]"
+        stackDirection="right"
+        rotation="1deg"
       />
     </div>
   );
@@ -171,76 +196,94 @@ type CareerBadgeProps = {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   className?: string;
+  stackDirection?: "left" | "right";
+  rotation?: string;
 };
 
-function CareerBadge({ icon: Icon, label, className = "" }: CareerBadgeProps) {
+function CareerBadge({
+  icon: Icon,
+  label,
+  className = "",
+  stackDirection = "right",
+  rotation = "0deg",
+}: CareerBadgeProps) {
+  const firstBackCard =
+    stackDirection === "right"
+      ? "translate-x-5 -translate-y-3 rotate-[5deg]"
+      : "-translate-x-5 -translate-y-3 -rotate-[5deg]";
+
+  const secondBackCard =
+    stackDirection === "right"
+      ? "translate-x-10 -translate-y-6 rotate-[9deg]"
+      : "-translate-x-10 -translate-y-6 -rotate-[9deg]";
+
   return (
-    <div
-      className={`
-        absolute z-20 flex items-center gap-3
-        rounded-full border border-line/70 bg-white
-        px-4 py-3 text-sm font-medium text-ink
-        shadow-md
-        ${className}
-      `}
-    >
-      <span className="grid h-8 w-8 place-items-center rounded-full bg-accent/10">
-        <Icon className="h-4 w-4 text-accent" />
-      </span>
-      <span>{label}</span>
+    <div className={`absolute z-20 ${className}`}>
+      <div
+        className="
+          group relative min-w-[190px]
+          transition-transform duration-500
+          hover:-translate-y-1
+        "
+        style={{ transform: `rotate(${rotation})` }}
+      >
+        {/* Kartu bayangan paling belakang */}
+        <div
+          className={`
+            pointer-events-none absolute inset-0
+            rounded-2xl
+            border border-line/40
+            bg-white/50
+            shadow-sm
+            backdrop-blur-sm
+            transition-transform duration-500
+            group-hover:translate-x-12
+            ${secondBackCard}
+          `}
+        />
+
+        {/* Kartu bayangan tengah */}
+        <div
+          className={`
+            pointer-events-none absolute inset-0
+            rounded-2xl
+            border border-line/60
+            bg-white/75
+            shadow-md
+            backdrop-blur-sm
+            transition-transform duration-500
+            ${firstBackCard}
+          `}
+        />
+
+        {/* Kartu utama */}
+        <div
+          className="
+            relative z-10
+            flex min-h-[58px] items-center gap-3
+            rounded-2xl
+            border border-line/70
+            bg-white/95
+            px-4 py-3
+            text-sm font-medium text-ink
+            shadow-[0_14px_35px_rgba(15,23,42,0.12)]
+            backdrop-blur-md
+            transition-all duration-300
+            group-hover:shadow-[0_20px_45px_rgba(99,102,241,0.16)]
+          "
+        >
+          <span
+            className="
+              grid h-9 w-9 shrink-0 place-items-center
+              rounded-full bg-accent/10
+            "
+          >
+            <Icon className="h-4 w-4 text-accent" />
+          </span>
+
+          <span className="whitespace-nowrap">{label}</span>
+        </div>
+      </div>
     </div>
-  );
-}
-
-function StaticHero() {
-  return (
-    <>
-      <section className="relative overflow-hidden">
-        <div className="grid-bg pointer-events-none absolute inset-0 opacity-40" />
-
-        <div className="relative mx-auto max-w-7xl px-4 pb-20 pt-32 sm:px-6 sm:pb-24">
-          <HeroContent />
-        </div>
-      </section>
-
-      <section className="border-t border-line/60">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24">
-          <p className="eyebrow">Cara Evola Bekerja</p>
-
-          <h2 className="mt-4 max-w-2xl font-display text-4xl sm:text-5xl">
-            Bukan kursus. Bukan kuis. Ini simulasi kerja.
-          </h2>
-
-          <div className="mt-12 grid gap-6 md:mt-14 md:grid-cols-3">
-            {[
-              {
-                icon: Target,
-                ...MISSION_ENGINE_PANELS[0],
-              },
-              {
-                icon: Sparkles,
-                ...MISSION_ENGINE_PANELS[1],
-              },
-              {
-                icon: Trophy,
-                ...MISSION_ENGINE_PANELS[2],
-              },
-            ].map((item) => {
-              const Icon = item.icon;
-
-              return (
-                <div key={item.title} className="surface-panel p-6 sm:p-8">
-                  <Icon className="h-6 w-6 text-accent" />
-                  <h3 className="mt-6 font-display text-2xl">{item.title}</h3>
-                  <p className="mt-3 leading-relaxed text-ink-dim">
-                    {item.body}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-    </>
   );
 }
