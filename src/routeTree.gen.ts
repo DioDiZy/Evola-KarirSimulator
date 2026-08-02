@@ -21,6 +21,7 @@ import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } fr
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AuthenticatedMagangIndexRouteImport } from './routes/_authenticated/magang.index'
 import { Route as AuthenticatedTracksTrackSlugRouteImport } from './routes/_authenticated/tracks.$trackSlug'
+import { Route as AuthenticatedSettingsSupabaseRouteImport } from './routes/_authenticated/settings.supabase'
 import { Route as AuthenticatedMissionsMissionIdRouteImport } from './routes/_authenticated/missions.$missionId'
 import { Route as AuthenticatedMagangTrackSlugRouteImport } from './routes/_authenticated/magang.$trackSlug'
 import { Route as AuthenticatedFieldsFieldSlugRouteImport } from './routes/_authenticated/fields.$fieldSlug'
@@ -93,6 +94,12 @@ const AuthenticatedTracksTrackSlugRoute =
     path: '/tracks/$trackSlug',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedSettingsSupabaseRoute =
+  AuthenticatedSettingsSupabaseRouteImport.update({
+    id: '/settings/supabase',
+    path: '/settings/supabase',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMissionsMissionIdRoute =
   AuthenticatedMissionsMissionIdRouteImport.update({
     id: '/missions/$missionId',
@@ -157,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/fields/$fieldSlug': typeof AuthenticatedFieldsFieldSlugRoute
   '/magang/$trackSlug': typeof AuthenticatedMagangTrackSlugRoute
   '/missions/$missionId': typeof AuthenticatedMissionsMissionIdRoute
+  '/settings/supabase': typeof AuthenticatedSettingsSupabaseRoute
   '/tracks/$trackSlug': typeof AuthenticatedTracksTrackSlugRoute
   '/magang/': typeof AuthenticatedMagangIndexRoute
   '/magang/hasil/$missionSlug': typeof AuthenticatedMagangHasilMissionSlugRoute
@@ -178,6 +186,7 @@ export interface FileRoutesByTo {
   '/fields/$fieldSlug': typeof AuthenticatedFieldsFieldSlugRoute
   '/magang/$trackSlug': typeof AuthenticatedMagangTrackSlugRoute
   '/missions/$missionId': typeof AuthenticatedMissionsMissionIdRoute
+  '/settings/supabase': typeof AuthenticatedSettingsSupabaseRoute
   '/tracks/$trackSlug': typeof AuthenticatedTracksTrackSlugRoute
   '/magang': typeof AuthenticatedMagangIndexRoute
   '/magang/hasil/$missionSlug': typeof AuthenticatedMagangHasilMissionSlugRoute
@@ -201,6 +210,7 @@ export interface FileRoutesById {
   '/_authenticated/fields/$fieldSlug': typeof AuthenticatedFieldsFieldSlugRoute
   '/_authenticated/magang/$trackSlug': typeof AuthenticatedMagangTrackSlugRoute
   '/_authenticated/missions/$missionId': typeof AuthenticatedMissionsMissionIdRoute
+  '/_authenticated/settings/supabase': typeof AuthenticatedSettingsSupabaseRoute
   '/_authenticated/tracks/$trackSlug': typeof AuthenticatedTracksTrackSlugRoute
   '/_authenticated/magang/': typeof AuthenticatedMagangIndexRoute
   '/_authenticated/magang/hasil/$missionSlug': typeof AuthenticatedMagangHasilMissionSlugRoute
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
     | '/fields/$fieldSlug'
     | '/magang/$trackSlug'
     | '/missions/$missionId'
+    | '/settings/supabase'
     | '/tracks/$trackSlug'
     | '/magang/'
     | '/magang/hasil/$missionSlug'
@@ -245,6 +256,7 @@ export interface FileRouteTypes {
     | '/fields/$fieldSlug'
     | '/magang/$trackSlug'
     | '/missions/$missionId'
+    | '/settings/supabase'
     | '/tracks/$trackSlug'
     | '/magang'
     | '/magang/hasil/$missionSlug'
@@ -267,6 +279,7 @@ export interface FileRouteTypes {
     | '/_authenticated/fields/$fieldSlug'
     | '/_authenticated/magang/$trackSlug'
     | '/_authenticated/missions/$missionId'
+    | '/_authenticated/settings/supabase'
     | '/_authenticated/tracks/$trackSlug'
     | '/_authenticated/magang/'
     | '/_authenticated/magang/hasil/$missionSlug'
@@ -371,6 +384,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTracksTrackSlugRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/settings/supabase': {
+      id: '/_authenticated/settings/supabase'
+      path: '/settings/supabase'
+      fullPath: '/settings/supabase'
+      preLoaderRoute: typeof AuthenticatedSettingsSupabaseRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/missions/$missionId': {
       id: '/_authenticated/missions/$missionId'
       path: '/missions/$missionId'
@@ -438,6 +458,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedFieldsFieldSlugRoute: typeof AuthenticatedFieldsFieldSlugRoute
   AuthenticatedMagangTrackSlugRoute: typeof AuthenticatedMagangTrackSlugRoute
   AuthenticatedMissionsMissionIdRoute: typeof AuthenticatedMissionsMissionIdRoute
+  AuthenticatedSettingsSupabaseRoute: typeof AuthenticatedSettingsSupabaseRoute
   AuthenticatedTracksTrackSlugRoute: typeof AuthenticatedTracksTrackSlugRoute
   AuthenticatedMagangIndexRoute: typeof AuthenticatedMagangIndexRoute
   AuthenticatedMagangHasilMissionSlugRoute: typeof AuthenticatedMagangHasilMissionSlugRoute
@@ -452,6 +473,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFieldsFieldSlugRoute: AuthenticatedFieldsFieldSlugRoute,
   AuthenticatedMagangTrackSlugRoute: AuthenticatedMagangTrackSlugRoute,
   AuthenticatedMissionsMissionIdRoute: AuthenticatedMissionsMissionIdRoute,
+  AuthenticatedSettingsSupabaseRoute: AuthenticatedSettingsSupabaseRoute,
   AuthenticatedTracksTrackSlugRoute: AuthenticatedTracksTrackSlugRoute,
   AuthenticatedMagangIndexRoute: AuthenticatedMagangIndexRoute,
   AuthenticatedMagangHasilMissionSlugRoute:
