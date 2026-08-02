@@ -74,6 +74,14 @@ export function SiteHeader({ variant = "app" }: { variant?: Variant } = {}) {
           >
             Profil
           </Link>
+          <Link
+            to="/settings/supabase"
+            onClick={onNavigate}
+            className="text-ink-dim hover:text-primary-cyan transition-colors min-h-11 inline-flex items-center"
+          >
+            Konektor
+          </Link>
+
           <button
             onClick={signOut}
             className="font-mono-cl text-xs uppercase tracking-widest text-ink-muted hover:text-ink min-h-11"
