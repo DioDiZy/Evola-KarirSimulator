@@ -5,6 +5,7 @@ import { ArrowRight, ArrowLeft, Lock } from "lucide-react";
 import { ClientOnly } from "@/components/client-only";
 import { useWebGLSupport } from "@/hooks/use-webgl-support";
 import { TrackMapScene } from "@/components/game/track-map-scene";
+import { requireWorkUnlocked } from "@/lib/work-gate";
 
 const trackQO = (slug: string) =>
   queryOptions({ queryKey: ["track", slug], queryFn: () => getTrackBySlug({ data: { slug } }) });
@@ -12,9 +13,12 @@ const progressQO = queryOptions({ queryKey: ["progress"], queryFn: () => getMyPr
 
 export const Route = createFileRoute("/_authenticated/tracks/$trackSlug")({
   head: ({ params }) => ({ meta: [{ title: `${params.trackSlug} · CareerLab` }, { name: "robots", content: "noindex" }] }),
-  loader: ({ context, params }) => {
-    context.queryClient.ensureQueryData(trackQO(params.trackSlug));
-    context.queryClient.ensureQueryData(progressQO);
+  loader: async ({ context, params }) => {
+    await requireWorkUnlocked(context.queryClient);
+    await Promise.all([
+      context.queryClient.ensureQueryData(trackQO(params.trackSlug)),
+      context.queryClient.ensureQueryData(progressQO),
+    ]);
   },
   component: TrackPage,
 });
