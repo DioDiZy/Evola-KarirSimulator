@@ -6,6 +6,7 @@ import { getFieldBySlug } from "@/lib/careerlab.functions";
 import { ClientOnly } from "@/components/client-only";
 import { useWebGLSupport } from "@/hooks/use-webgl-support";
 import { FieldChamberScene } from "@/components/game/field-chamber-scene";
+import { requireWorkUnlocked } from "@/lib/work-gate";
 
 const fieldQueryOptions = (slug: string) =>
   queryOptions({
@@ -29,8 +30,10 @@ export const Route = createFileRoute("/_authenticated/fields/$fieldSlug")({
     ],
   }),
 
-  loader: ({ context, params }) =>
-    context.queryClient.ensureQueryData(fieldQueryOptions(params.fieldSlug)),
+  loader: async ({ context, params }) => {
+    await requireWorkUnlocked(context.queryClient);
+    return context.queryClient.ensureQueryData(fieldQueryOptions(params.fieldSlug));
+  },
 
   component: FieldPage,
 });

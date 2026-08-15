@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, Trophy, Loader2 } from "l
 import { toast } from "sonner";
 
 const MissionScene = lazy(() => import("@/components/mission-scene").then(m => ({ default: m.MissionScene })));
+import { requireWorkUnlocked } from "@/lib/work-gate";
 
 const qo = (id: string) =>
   queryOptions({ queryKey: ["mission", id], queryFn: () => getMission({ data: { missionId: id } }) });
@@ -16,7 +17,10 @@ type Result = Awaited<ReturnType<typeof submitMission>>;
 
 export const Route = createFileRoute("/_authenticated/missions/$missionId")({
   head: () => ({ meta: [{ title: "Mission · CareerLab" }, { name: "robots", content: "noindex" }] }),
-  loader: ({ context, params }) => context.queryClient.ensureQueryData(qo(params.missionId)),
+  loader: async ({ context, params }) => {
+    await requireWorkUnlocked(context.queryClient);
+    return context.queryClient.ensureQueryData(qo(params.missionId));
+  },
   component: MissionPage,
 });
 

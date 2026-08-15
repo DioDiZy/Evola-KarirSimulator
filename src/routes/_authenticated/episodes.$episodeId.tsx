@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { getEpisode, getMyMissionAttempts } from "@/lib/careerlab.functions";
 import { ArrowLeft, ArrowRight, CheckCircle2, Circle, Clock } from "lucide-react";
+import { requireWorkUnlocked } from "@/lib/work-gate";
 
 const epQO = (id: string) =>
   queryOptions({ queryKey: ["episode", id], queryFn: () => getEpisode({ data: { episodeId: id } }) });
@@ -10,9 +11,12 @@ const attemptsQO = (id: string) =>
 
 export const Route = createFileRoute("/_authenticated/episodes/$episodeId")({
   head: () => ({ meta: [{ title: "Episode · CareerLab" }, { name: "robots", content: "noindex" }] }),
-  loader: ({ context, params }) => {
-    context.queryClient.ensureQueryData(epQO(params.episodeId));
-    context.queryClient.ensureQueryData(attemptsQO(params.episodeId));
+  loader: async ({ context, params }) => {
+    await requireWorkUnlocked(context.queryClient);
+    await Promise.all([
+      context.queryClient.ensureQueryData(epQO(params.episodeId)),
+      context.queryClient.ensureQueryData(attemptsQO(params.episodeId)),
+    ]);
   },
   component: EpisodePage,
 });
