@@ -239,6 +239,9 @@ export function InternChatRoom({ mission, track, jobs, answers, displayName }: I
       void qc.invalidateQueries({ queryKey: ["intern", "missions"] });
       void qc.invalidateQueries({ queryKey: ["intern", "tracks"] });
       void qc.invalidateQueries({ queryKey: ["intern", "result"] });
+      if (res.missionCompleted) {
+        void qc.invalidateQueries({ queryKey: ["intern", "run", mission.slug] });
+      }
       await askFrom(nextIndex, true);
     },
     onError: (e) => {
