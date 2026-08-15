@@ -3,6 +3,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { z } from "zod";
+import { roleAccessFromProgress } from "@/lib/intern-roles.server";
+import { ROLE_META } from "@/lib/intern-roles";
 
 /* ---------- Public catalog (SSR-safe, no auth) ---------- */
 
@@ -114,6 +116,13 @@ export const submitMission = createServerFn({ method: "POST" })
   )
   .handler(async ({ context, data }) => {
     const { supabase, userId } = context;
+
+    // Magang is the mandatory first role: block the work simulator until it is cleared.
+    const access = await roleAccessFromProgress(supabase, userId);
+    if (!access.byRole.get("pekerja")?.unlocked) {
+      throw new Error(`Simulasi kerja masih terkunci. ${ROLE_META.pekerja.requirement}`);
+    }
+
     const { data: mission, error: mErr } = await supabase.from("missions").select("*").eq("id", data.missionId).maybeSingle();
     if (mErr || !mission) throw new Error("Mission tidak ditemukan");
 
