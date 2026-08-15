@@ -220,7 +220,6 @@ export function InternChatRoom({ mission, track, jobs, answers, displayName }: I
         tone: res.isCorrect ? "success" : "warn",
       });
 
-      const answeredNow = res.correctCount + res.incorrectCount;
       const nextIndex = cursor + 1;
       const finishedJob =
         nextIndex < flat.length && flat[nextIndex].jobIndex !== flat[cursor].jobIndex;
@@ -235,16 +234,19 @@ export function InternChatRoom({ mission, track, jobs, answers, displayName }: I
         toast.success("Selamat! Role Pekerja kini terbuka.");
       }
       setCursor(nextIndex);
-      await qc.invalidateQueries();
-      if (!alive.current) return;
+      // Keep the running transcript query untouched; refresh only the surrounding data.
+      void qc.invalidateQueries({ queryKey: ["intern", "role-access"] });
+      void qc.invalidateQueries({ queryKey: ["intern", "missions"] });
+      void qc.invalidateQueries({ queryKey: ["intern", "tracks"] });
+      void qc.invalidateQueries({ queryKey: ["intern", "result"] });
       await askFrom(nextIndex, true);
-      if (res.missionCompleted && alive.current) {
-        void answeredNow;
-      }
     },
     onError: (e) => {
       setPendingOption(null);
-      toast.error(e instanceof Error ? e.message : "Gagal menyimpan jawaban. Coba lagi.");
+      setTyping(false);
+      const msg = e instanceof Error ? e.message : "Gagal menyimpan jawaban. Coba lagi.";
+      push({ kind: "system", text: `${msg} Pilih jawabanmu sekali lagi.`, tone: "warn" });
+      toast.error(msg);
     },
   });
 
