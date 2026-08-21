@@ -179,8 +179,9 @@ export const listInternMissions = createServerFn({ method: "GET" })
     ]);
 
     const jobIds = (jobs ?? []).map((j) => j.id);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: questions } = jobIds.length
-      ? await supabase.from("intern_questions").select("id, job_id").in("job_id", jobIds)
+      ? await supabaseAdmin.from("intern_questions").select("id, job_id").in("job_id", jobIds)
       : { data: [] as { id: string; job_id: string }[] };
 
     const jobsByMission = new Map<string, string[]>();
@@ -258,8 +259,9 @@ export const getInternMissionRun = createServerFn({ method: "GET" })
     ]);
 
     const jobIds = (jobs ?? []).map((j) => j.id);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: questions } = jobIds.length
-      ? await supabase
+      ? await supabaseAdmin
           .from("intern_questions")
           .select("id, job_id, senior_message, question_text, order_index")
           .in("job_id", jobIds)
@@ -268,7 +270,7 @@ export const getInternMissionRun = createServerFn({ method: "GET" })
 
     const questionIds = (questions ?? []).map((q) => q.id);
     const { data: options } = questionIds.length
-      ? await supabase
+      ? await supabaseAdmin
           .from("intern_answer_options")
           .select("id, question_id, label, order_index")
           .in("question_id", questionIds)
