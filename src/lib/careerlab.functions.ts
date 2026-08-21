@@ -1,28 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
 import { z } from "zod";
 import { roleAccessFromProgress } from "@/lib/intern-roles.server";
 import { ROLE_META } from "@/lib/intern-roles";
+import { publicClient } from "@/lib/supabase-public.server";
 
 /* ---------- Public catalog (SSR-safe, no auth) ---------- */
 
-function publicClient() {
-  const url = process.env.SUPABASE_URL!;
-  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
-  return createClient<Database>(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false, storage: undefined },
-    global: {
-      fetch: (input, init) => {
-        const h = new Headers(init?.headers);
-        if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`) h.delete("Authorization");
-        h.set("apikey", key);
-        return fetch(input, { ...init, headers: h });
-      },
-    },
-  });
-}
 
 export const listFields = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
